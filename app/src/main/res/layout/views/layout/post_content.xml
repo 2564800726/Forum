@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <include layout="@layout/user_information_post"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/include_user_information"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_praise"
+        android:textSize="20sp"
+        android:text="@string/default_number"
+        android:drawableLeft="@drawable/praise_normal"
+        android:drawableStart="@drawable/praise_normal"
+        app:layout_constraintTop_toTopOf="@id/include_user_information"
+        app:layout_constraintBottom_toBottomOf="@id/include_user_information"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_post_content"
+        android:layout_margin="10dp"
+        app:layout_constraintTop_toBottomOf="@id/include_user_information"/>
+
+</android.support.constraint.ConstraintLayout>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:id="@+id/fgm_zone">
+
+    <include layout="@layout/user_information"/>
+
+    <!--我的帖子-->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_my_posts"
+        android:textSize="20sp"
+        android:text="@string/my_posts"
+        android:drawableRight="@drawable/open"
+        android:drawableEnd="@drawable/open"
+        android:layout_marginTop="20dp"/>
+
+    <!--我的回复-->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_my_response"
+        android:text="@string/my_response"
+        android:textSize="20sp"
+        android:drawableRight="@drawable/open"
+        android:drawableEnd="@drawable/open"
+        android:layout_marginTop="5dp"/>
+
+    <!--消息-->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_user_message"
+        android:textSize="20sp"
+        android:text="@string/user_message"
+        android:drawableRight="@drawable/open"
+        android:drawableEnd="@drawable/open"
+        android:layout_marginTop="5dp"/>
+
+    <!--设置-->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_setting"
+        android:text="@string/setting"
+        android:textSize="20sp"
+        android:drawableRight="@drawable/open"
+        android:drawableEnd="@drawable/open"
+        android:layout_marginTop="5dp"/>
+
+</LinearLayout>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorBackground"
+    android:layout_margin="10dp">
+
+    <ImageView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:id="@+id/iv_plate_icon_Subscribe"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_plate_name_Subscribe"
+        android:layout_weight="1"
+        android:text="@string/zone"
+        android:textStyle="normal"
+        android:textSize="25sp"
+        android:maxLength="6"
+        android:maxLines="1"
+        android:layout_gravity="center|start"
+        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp" />
+
+    <Button
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_Subscribe_plate"
+        android:layout_gravity="center"/>
+
+</LinearLayout>

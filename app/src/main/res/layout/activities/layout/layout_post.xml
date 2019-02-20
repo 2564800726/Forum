@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/custom_toolbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:id="@+id/tv_post_title_in_post"
+        android:background="@color/colorBackground"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:id="@+id/rv_floor_list"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
+    </android.support.v7.widget.RecyclerView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/colorBackground">
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:id="@+id/iv_praise"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/praise_normal"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:src="@drawable/forward_can_not"
+            android:layout_gravity="center"
+            android:id="@+id/iv_forward"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/bg_pager"
+            android:padding="2dp"
+            android:id="@+id/ll_pager">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_current_page"
+                android:textSize="25sp"
+                android:layout_gravity="center"
+                android:text="@string/default_number"
+                android:textColor="@color/colorGray"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/divider"
+                android:textSize="25sp"
+                android:layout_gravity="center"
+                android:textColor="@color/colorGray"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_total_page"
+                android:textSize="25sp"
+                android:layout_gravity="center"
+                android:text="@string/default_number"
+                android:textColor="@color/colorGray"/>
+
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:src="@drawable/backward_can"
+            android:id="@+id/iv_backward"
+            android:layout_gravity="center"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
+        <Button
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:id="@+id/btn_comment"
+            android:background="@drawable/bg_pager"
+            android:text="@string/comment"
+            android:textSize="20sp"
+            android:layout_gravity="center"
+            android:textColor="@color/colorGray"
+            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/subscribe_normal"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/tv_post_visit"
+        android:text="@string/zone"
+        android:textSize="15sp"
+        android:textStyle="normal"
+        android:gravity="center"
+        android:textColor="@color/colorGray"
+        android:maxLines="1"/>
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/message_normal"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/tv_post_discuss"
+        android:text="@string/subscribe"
+        android:gravity="center"
+        android:textColor="@color/colorGray"
+        android:textSize="15sp"
+        android:textStyle="normal"
+        android:maxLines="1"/>
+
+</LinearLayout>
