@@ -1,0 +1,54 @@
+<resources>
+    <string name="app_name">某论坛</string>
+    <string name="input_account">输入手机号码</string>
+    <string name="input_password">输入密码</string>
+    <string name="digits_password">qwertyuiopasdfghjklzxcvbnm1234567890</string>
+    <string name="digits_account">1234567890</string>
+    <string name="get_verification_code">获取验证码</string>
+    <string name="login">登陆</string>
+    <string name="forget_password">忘记密码?</string>
+    <string name="input_verification_code">输入验证码</string>
+    <string name="register">注册</string>
+    <string name="confirm_password">确定密码</string>
+    <string name="new_password">新密码</string>
+    <string name="find_password">找回密码</string>
+    <string name="tourist_login">游客登陆</string>
+    <string name="forum">论坛</string>
+    <string name="subscribe">关注</string>
+    <string name="zone">空间</string>
+    <string name="message">消息</string>
+    <string name="sign_in">签到</string>
+    <string name="search">搜索</string>
+    <string name="user_name">用户名</string>
+    <string name="user_signature">什么都没有~</string>
+    <string name="star">收藏</string>
+    <string name="fans">粉丝</string>
+    <string name="user_message">消息</string>
+    <string name="my_response">我的回复</string>
+    <string name="my_posts">我的帖子</string>
+    <string name="setting">设置</string>
+    <string name="to_select">点击登陆/注册</string>
+    <string name="response">回复</string>
+    <string name="divider">/</string>
+    <string name="comment">评论</string>
+
+    <string name="age">年龄：</string>
+    <string name="gender">性别：</string>
+    <string name="nick_name">昵称：</string>
+    <string name="signature">个性签名:</string>
+    <string name="save">保存</string>
+    <string name="male">男</string>
+    <string name="female">女</string>
+    <string name="year">年</string>
+    <string name="month">月</string>
+    <string name="day">日</string>
+
+    <!--level-->
+    <string name="level_1">Lv.1</string>
+    <string name="level_2">Lv.2</string>
+    <string name="level_3">Lv.3</string>
+    <string name="level_4">Lv.4</string>
+    <string name="level_5">Lv.5</string>
+    <string name="level_6">Lv.6</string>
+    <string name="default_number">0</string>
+</resources>

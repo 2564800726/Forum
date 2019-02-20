@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <EditText
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:id="@+id/et_verification_code"
+        android:maxLines="1"
+        android:maxLength="6"
+        android:inputType="number"
+        android:digits="@string/digits_account"
+        android:hint="@string/input_verification_code"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:id="@+id/tv_get_verification_code"
+        android:textSize="25sp"
+        android:text="@string/get_verification_code"
+        android:textColor="@color/colorBlue"/>
+
+</LinearLayout>

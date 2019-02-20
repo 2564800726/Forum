@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <EditText
+        android:id="@+id/et_account"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:digits="@string/digits_account"
+        android:hint="@string/input_account"
+        android:inputType="phone"
+        android:maxLength="11"
+        android:maxLines="1" />
+
+</FrameLayout>
