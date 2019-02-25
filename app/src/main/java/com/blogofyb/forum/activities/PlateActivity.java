@@ -1,13 +1,20 @@
 package com.blogofyb.forum.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.Toast;
 
 import com.blogofyb.forum.R;
+import com.blogofyb.forum.adpter.PlateListAdapter;
 import com.blogofyb.forum.adpter.PostListAdapter;
 import com.blogofyb.forum.beans.PlateInformationBean;
 import com.blogofyb.forum.beans.PostBean;
@@ -22,6 +29,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -33,6 +41,7 @@ public class PlateActivity extends BaseActivity {
     private final int GET_TOP_POSTS_SUCCESS = 4;
     private final int GET_TOP_POSTS_FAILED = 5;
     private final int ALL_SUCCESS = 6;
+    private final int ALL_FAILED = 7;
 
     private boolean getPostsFinish = false;
     private boolean getPlateInformationFinish = false;
@@ -40,6 +49,9 @@ public class PlateActivity extends BaseActivity {
 
     private String mPlateId;
     private RecyclerView mRecyclerView;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private FloatingActionButton mWritePost;
+    private PostListAdapter mAdapter;
 
     private List<PostBean> mPosts;
     private List<TopPostBean> mTopPosts;
@@ -52,23 +64,28 @@ public class PlateActivity extends BaseActivity {
                 case GET_POSTS_SUCCESS:
                     getPostsFinish = true;
                     break;
-                case GET_POSTS_FAILED:
-                    getPostsFinish = false;
-                    break;
                 case GET_PLATE_INFORMATION_SUCCESS:
                     getPlateInformationFinish = true;
                     break;
-                case GET_PLATE_INFORMATION_FAILED:
-                    getPlateInformationFinish = false;
-                    break;
                 case GET_TOP_POSTS_SUCCESS:
                     getTopPostsFinish = true;
+                    break;
+                case GET_POSTS_FAILED:
+                    getPostsFinish = false;
+                    break;
+                case GET_PLATE_INFORMATION_FAILED:
+                    getPlateInformationFinish = false;
                     break;
                 case GET_TOP_POSTS_FAILED:
                     getTopPostsFinish = false;
                     break;
                 case ALL_SUCCESS:
+                    mSwipeRefreshLayout.setRefreshing(false);
                     setData();
+                    break;
+                case ALL_FAILED:
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    Toast.makeText(PlateActivity.this, "加载失败", Toast.LENGTH_SHORT).show();
                     break;
             }
         }
@@ -84,16 +101,58 @@ public class PlateActivity extends BaseActivity {
         }
         setContentView(R.layout.layout_plate);
         mRecyclerView = findViewById(R.id.rv_post_list);
+        mAdapter = new PostListAdapter(mPosts, mTopPosts, mPlateInformation, this);
+        mSwipeRefreshLayout = findViewById(R.id.srl_refresh_post);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mSwipeRefreshLayout.setRefreshing(true);
+                loadBeans();
+            }
+        });
+        mWritePost = findViewById(R.id.fab_write_post);
+        mWritePost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(PlateActivity.this, WritePostActivity.class);
+                intent.putExtra(Keys.ID, mPlateId);
+                intent.putExtra(Keys.PLATE_NAME, mPlateInformation.get(0).getName());
+                startActivity(intent);
+            }
+        });
         loadBeans();
+        Toolbar toolbar = findViewById(R.id.tb_app);
+        toolbar.setNavigationIcon(R.drawable.back);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ActivitiesManager.removeActivity(PlateActivity.this);
+            }
+        });
     }
 
     private void loadBeans() {
+        mPosts = new ArrayList<>();
+        mPlateInformation = new ArrayList<>();
+        mTopPosts = new ArrayList<>();
         new Thread(new Runnable() {
             @Override
             public void run() {
-                while (!getPostsFinish || !getPlateInformationFinish || !getTopPostsFinish) {}
+                int count = 0;
+                while ((!getPostsFinish || !getPlateInformationFinish || !getTopPostsFinish) && count < 50) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    count++;
+                }
                 Message message = new Message();
-                message.what = ALL_SUCCESS;
+                if (getPostsFinish && getPlateInformationFinish && getTopPostsFinish) {
+                    message.what = ALL_SUCCESS;
+                } else {
+                    message.what = ALL_FAILED;
+                }
                 handler.sendMessage(message);
             }
         }).start();
@@ -150,6 +209,7 @@ public class PlateActivity extends BaseActivity {
                     plateInformationBean.setIcon((String) returnData.get(Keys.ICON));
                     plateInformationBean.setName((String) returnData.get(Keys.PLATE_NAME));
                     plateInformationBean.setId((String) returnData.get(Keys.ID));
+                    mPlateInformation.add(plateInformationBean);
                     Message message = new Message();
                     message.what = GET_PLATE_INFORMATION_SUCCESS;
                     handler.sendMessage(message);
@@ -196,6 +256,6 @@ public class PlateActivity extends BaseActivity {
 
     private void setData() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setAdapter(new PostListAdapter(mPosts, mTopPosts, mPlateInformation, this));
+        mRecyclerView.setAdapter(mAdapter);
     }
 }

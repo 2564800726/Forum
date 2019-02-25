@@ -20,7 +20,7 @@ public class Keys {
     public static final String POST_CONTENT = "content";
     public static final String ID = "id";
     public static final String PLATE_NAME = "name";
-    public static final String POST_DATE = "date";
+    public static final String POST_DATE = "edit_date";
 
     public static final String NIC_NAME = "nicName";
     public static final String HEAD = "head";
@@ -29,7 +29,7 @@ public class Keys {
     public static final String GENDER = "gender";
     public static final String LEVEL = "level";
     public static final String SUBSCRIBE_COUNT = "subscribeCount";
-    public static final String FANS_COUNT = "fansCunt";
+    public static final String FANS_COUNT = "fansCount";
     public static final String STAR_COUNT = "starCount";
     public static final String SIGNATURE = "signature";
     public static final String BIRTHDAY = "birthday";
@@ -41,4 +41,6 @@ public class Keys {
     public static final String PRAISE = "praise";
     public static final String USER_NAME = "userName";
     public static final String ANOTHER = "another";
+    public static final String TOTAL_PAGES = "pages";
+    public static final String TIME = "edit_time";
 }

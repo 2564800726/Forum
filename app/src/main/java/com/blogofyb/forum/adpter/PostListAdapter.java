@@ -6,11 +6,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.blogofyb.forum.R;
@@ -33,6 +35,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private final int TYPE_INFORMATION = 0;
     private final int TYPE_TOP = 1;
     private final int TYPE_ANOTHER = 2;
+    private final int TYPE_END = 5;
     private final int SIGN_IN_SUCCESS = 3;
     private final int SIGN_IN_FAILED = 4;
 
@@ -72,36 +75,43 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public int getItemViewType(int position) {
         if (position == 0) {
             return TYPE_INFORMATION;
-        } else if (position <= mTopPosts.size()) {
+        } else if (position < mTopPosts.size()) {
             return TYPE_TOP;
-        } else {
+        } else if (position < mPosts.size()){
             return TYPE_ANOTHER;
+        } else {
+            return TYPE_END;
         }
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        View view;
         if (getItemViewType(i) == TYPE_INFORMATION) {
-            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.plate_information, viewGroup, false);
+            view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.plate_information, viewGroup, false);
             return new PlateInformationHolder(view);
         } else if (getItemViewType(i) == TYPE_TOP) {
-            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.top, viewGroup, false);
+            view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.top, viewGroup, false);
             return new TopPostHolder(view);
-        } else {
+        } else if (getItemViewType(i) == TYPE_ANOTHER){
             if ("".equals(mPosts.get(0).getIcon()) || mPosts.get(0).getIcon() == null) {
-                View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recommend_post_no_pic, viewGroup, false);
+                view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recommend_post_no_pic, viewGroup, false);
                 return new AnotherPostsNoPicHolder(view);
             } else {
-                View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recommend_post_have_pic, viewGroup, false);
+                view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recommend_post_have_pic, viewGroup, false);
                 return new AnotherPostsHavePicHolder(view);
             }
+        } else {
+            // 上拉刷新
+            view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.progress_bar, viewGroup, false);
+            return new LoadingHolder(view);
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int i) {
-        if (i == 0) {
+        if (i == TYPE_INFORMATION) {
             PlateInformationHolder holder = (PlateInformationHolder) viewHolder;
             holder.mPlateName.setText(mPlateInformation.get(i).getName());
 
@@ -145,7 +155,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     mContext.startActivity(intent);
                 }
             });
-        } else if (i <= mTopPosts.size()) {
+        } else if (i == TYPE_TOP) {
             TopPostHolder holder = (TopPostHolder) viewHolder;
             holder.mTopTitle.setText(mTopPosts.get(i).getTitle());
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -156,7 +166,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     mContext.startActivity(intent);
                 }
             });
-        } else {
+        } else if (i == TYPE_ANOTHER){
             if (viewHolder instanceof AnotherPostsHavePicHolder) {
                 final AnotherPostsHavePicHolder holder = (AnotherPostsHavePicHolder) viewHolder;
                 final PostBean recommendPost = mPosts.get(i);
@@ -174,6 +184,8 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(mContext, PostActivity.class);
+                        intent.putExtra(Keys.POST_AUTHOR, recommendPost.getAuthor());
+                        intent.putExtra(Keys.POST_CONTENT, recommendPost.getDescription());
                         mContext.startActivity(intent);
                     }
                 });
@@ -191,16 +203,28 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(mContext, PostActivity.class);
+                        intent.putExtra(Keys.POST_AUTHOR, recommendPost.getAuthor());
+                        intent.putExtra(Keys.POST_CONTENT, recommendPost.getDescription());
                         mContext.startActivity(intent);
                     }
                 });
             }
+        } else {
+            LoadingHolder holder = (LoadingHolder) viewHolder;
+
         }
     }
 
     @Override
     public int getItemCount() {
-        return mPlateInformation.size() + mPosts.size() + mTopPosts.size();
+        return mPlateInformation.size() + mPosts.size() + mTopPosts.size() + 1;
+    }
+
+    public void refreshData(List<PlateInformationBean> mPlateInformation, List<TopPostBean> mTopPosts, List<PostBean> mPosts) {
+        this.mPlateInformation = mPlateInformation;
+        this.mTopPosts = mTopPosts;
+        this.mPosts = mPosts;
+        notifyDataSetChanged();
     }
 
     // 板块的基本信息
@@ -269,6 +293,16 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             mPostVisit = itemView.findViewById(R.id.tv_post_visit);
             mPostDiscuss = itemView.findViewById(R.id.tv_post_discuss);
             mPostEditDate = itemView.findViewById(R.id.tv_post_edit_date);
+        }
+    }
+
+    // 加载的进度条
+    static class LoadingHolder extends RecyclerView.ViewHolder {
+        private ProgressBar mProgressBar;
+
+        public LoadingHolder(View view) {
+            super(view);
+            mProgressBar = view.findViewById(R.id.pb_loading);
         }
     }
 }

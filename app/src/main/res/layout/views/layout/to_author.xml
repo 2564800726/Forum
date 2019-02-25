@@ -2,7 +2,9 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/colorWhite"
+    android:padding="10dp">
 
     <include layout="@layout/user_information_post"
         android:layout_width="wrap_content"
@@ -26,6 +28,8 @@
         app:layout_constraintTop_toBottomOf="@id/include_user_information"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"/>
+        android:layout_marginRight="10dp"
+        android:textSize="18sp"
+        android:padding="10dp"/>
 
 </android.support.constraint.ConstraintLayout>

@@ -2,6 +2,8 @@ package com.blogofyb.forum.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,8 +13,10 @@ import android.view.View;
 import com.blogofyb.forum.R;
 import com.blogofyb.forum.utils.constant.Keys;
 import com.blogofyb.forum.utils.constant.Messages;
+import com.blogofyb.forum.utils.constant.SQLite;
 import com.blogofyb.forum.utils.constant.ServerInformation;
 import com.blogofyb.forum.interfaces.HttpCallbackListener;
+import com.blogofyb.forum.utils.database.MySQLiteOpenHelper;
 import com.blogofyb.forum.utils.http.Post;
 
 import java.util.HashMap;
@@ -46,10 +50,21 @@ public class WelcomeActivity extends BaseActivity {
                 Message message = new Message();
                 SharedPreferences sharedPreferences = getSharedPreferences("user", MODE_PRIVATE);
                 if (sharedPreferences.getBoolean("haveUser", false)) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    SQLiteDatabase database = MySQLiteOpenHelper.getDatabase(WelcomeActivity.this);
+                    Cursor cursor = database.query(SQLite.TABLE_NAME, new String[] {SQLite.ACCOUNT, SQLite.PASSWORD},
+                            null, null, null, null, null);
                     String account = null;
                     String password = null;
-                    // read user information for database
-
+                    while (cursor.moveToNext()) {
+                        account = cursor.getString(cursor.getColumnIndex(SQLite.ACCOUNT));
+                        password = cursor.getString(cursor.getColumnIndex(SQLite.PASSWORD));
+                    }
+                    cursor.close();
                     autoLogin(account, password);
                 } else {
                     try {
@@ -68,6 +83,7 @@ public class WelcomeActivity extends BaseActivity {
         HashMap<String, String> body = new HashMap<>();
         body.put(Keys.ACCOUNT, account);
         body.put(Keys.PASSWORD, password);
+        body.put(Keys.VERIFICATION_CODE, "forum");
         Post.sendHttpRequest(ServerInformation.ADDRESS + "login", body, new HttpCallbackListener() {
             private Intent intent = new Intent(WelcomeActivity.this, ForumActivity.class);
             @Override

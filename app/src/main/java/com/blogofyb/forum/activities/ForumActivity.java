@@ -1,21 +1,29 @@
 package com.blogofyb.forum.activities;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.blogofyb.forum.R;
 import com.blogofyb.forum.adpter.MyFragmentPagerAdapter;
 import com.blogofyb.forum.utils.constant.Keys;
+import com.blogofyb.forum.utils.constant.SQLite;
+import com.blogofyb.forum.utils.database.MySQLiteOpenHelper;
 
 public class ForumActivity extends BaseActivity implements View.OnClickListener {
     private ViewPager mViewPager;
+    boolean flag = false;
 
     private ImageView mImgForum;
     private ImageView mImgSubscribe;
@@ -40,8 +48,14 @@ public class ForumActivity extends BaseActivity implements View.OnClickListener 
         Intent intent = getIntent();
         if (intent != null) {
             mIsTourist = intent.getBooleanExtra("tourist", false);
-            mAccount = intent.getStringExtra(Keys.ACCOUNT);
         }
+        SQLiteDatabase database = MySQLiteOpenHelper.getDatabase(this);
+        Cursor cursor = database.query(SQLite.TABLE_NAME, new String[] {SQLite.ACCOUNT},
+                null, null, null, null, null);
+        while (cursor.moveToNext()) {
+            mAccount = cursor.getString(cursor.getColumnIndex(SQLite.ACCOUNT));
+        }
+        cursor.close();
         ActivitiesManager.addActivity(this);
         initView();
     }
@@ -160,14 +174,18 @@ public class ForumActivity extends BaseActivity implements View.OnClickListener 
     private void setToolbar(int id) {
         switch (id) {
             case 0:
-                mToolbar.setNavigationIcon(R.drawable.subscribe);
-                mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(ForumActivity.this, SubscribePlateActivity.class);
-                        startActivity(intent);
-                    }
-                });
+                if (!mIsTourist) {
+                    mToolbar.setNavigationIcon(R.drawable.subscribe);
+                    mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(ForumActivity.this, SubscribePlateActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+                } else {
+                    mToolbar.removeAllViews();
+                }
                 break;
             case 1:
                 mToolbar.removeAllViews();
@@ -189,6 +207,16 @@ public class ForumActivity extends BaseActivity implements View.OnClickListener 
                     });
                 }
                 break;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (flag) {
+            ActivitiesManager.finishAllActivities();
+        } else {
+            Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
+            flag = true;
         }
     }
 }

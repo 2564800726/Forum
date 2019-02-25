@@ -2,6 +2,7 @@ package com.blogofyb.forum.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -15,8 +16,10 @@ import android.widget.Toast;
 import com.blogofyb.forum.R;
 import com.blogofyb.forum.utils.constant.Keys;
 import com.blogofyb.forum.utils.constant.Messages;
+import com.blogofyb.forum.utils.constant.SQLite;
 import com.blogofyb.forum.utils.constant.ServerInformation;
 import com.blogofyb.forum.interfaces.HttpCallbackListener;
+import com.blogofyb.forum.utils.database.MySQLiteOpenHelper;
 import com.blogofyb.forum.utils.http.Post;
 import com.blogofyb.forum.utils.json.ToHashMap;
 
@@ -46,13 +49,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     showMessage(message);
                     break;
                 case Messages.LOGIN_SUCCESS:
-                    SharedPreferences.Editor editor = getSharedPreferences("user", MODE_PRIVATE).edit();
-                    editor.putBoolean("haveUser", true);
-                    editor.apply();
-                    // use database to save data
-                    Intent intent = new Intent(LoginActivity.this, ForumActivity.class);
-                    startActivity(intent);
-                    ActivitiesManager.finishAllActivities();
+                    String account = message.getData().getString(Keys.ACCOUNT);
+                    String password = message.getData().getString(Keys.PASSWORD);
+                    loginSuccess(account, password);
                     break;
                 case Messages.LOGIN_FAILED:
                     setButtonClickable(true);
@@ -119,21 +118,36 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         }
     }
 
+    private void loginSuccess(String account, String password) {
+        SharedPreferences.Editor editor = getSharedPreferences("user", MODE_PRIVATE).edit();
+        editor.putBoolean("haveUser", true);
+        editor.apply();
+        String sql = "INSERT INTO " + SQLite.TABLE_NAME + "(" + SQLite.ACCOUNT + ", " + SQLite.PASSWORD + ") VALUES ('" + account + "', '" + password + "');";
+        SQLiteDatabase database = MySQLiteOpenHelper.getDatabase(this);
+        database.execSQL(sql);
+        Intent intent = new Intent(this, ForumActivity.class);
+        intent.putExtra("tourist", false);
+        startActivity(intent);
+        ActivitiesManager.finishAllActivities();
+    }
+
     private void login() {
         final Message message = new Message();
         final Bundle bundle = new Bundle();
         HashMap<String, String> body = new HashMap<>();
         body.put(Keys.ACCOUNT, account.getText().toString());
         body.put(Keys.PASSWORD, password.getText().toString());
-        Post.sendHttpRequest(ServerInformation.ADDRESS + "login", body, new HttpCallbackListener() {
+        body.put(Keys.VERIFICATION_CODE, verificationCode.getText().toString());
+        Post.sendHttpRequest(ServerInformation.LOGIN, body, new HttpCallbackListener() {
             @Override
             public void onFinish(String response) {
                 HashMap keyValues = ToHashMap.getInstance().transform(response);
                 if (keyValues != null) {
                     if (ServerInformation.SUCCESS.equals(keyValues.get(Keys.STATUS))) {
                         message.what = Messages.LOGIN_SUCCESS;
+                        bundle.putString(Keys.ACCOUNT, (String) keyValues.get(Keys.ACCOUNT));
+                        bundle.putString(Keys.PASSWORD, (String) keyValues.get(Keys.PASSWORD));
                     } else {
-                        setTextViewClickable(true);
                         message.what = Messages.LOGIN_FAILED;
                         bundle.putString(Keys.MESSAGE, (String) keyValues.get(Keys.MESSAGE));
                     }
@@ -158,7 +172,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private void getVerificationCode() {
         HashMap<String, String> body = new HashMap<>();
         body.put(Keys.ACCOUNT, account.getText().toString());
-        Post.sendHttpRequest(ServerInformation.ADDRESS + "getVerificationCode", body, new HttpCallbackListener() {
+        Post.sendHttpRequest(ServerInformation.GET_VERIFICATION_CODE, body, new HttpCallbackListener() {
             @Override
             public void onFinish(String response) {
                 Message message = new Message();
@@ -169,8 +183,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         message.what = Messages.GET_VERIFICATION_CODE_SUCCESS;
                     } else {
                         message.what = Messages.GET_VERIFICATION_CODE_FAILED;
-                        bundle.putString(Keys.MESSAGE, (String) keyValues.get(Keys.MESSAGE));
                     }
+                    bundle.putString(Keys.MESSAGE, (String) keyValues.get(
+                            Keys.MESSAGE));
                 } else {
                     message.what = Messages.GET_VERIFICATION_CODE_FAILED;
                     bundle.putString(Keys.MESSAGE, "服务器异常");

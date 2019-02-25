@@ -1,6 +1,8 @@
 package com.blogofyb.forum.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,8 +16,10 @@ import android.widget.Toast;
 import com.blogofyb.forum.R;
 import com.blogofyb.forum.utils.constant.Keys;
 import com.blogofyb.forum.utils.constant.Messages;
+import com.blogofyb.forum.utils.constant.SQLite;
 import com.blogofyb.forum.utils.constant.ServerInformation;
 import com.blogofyb.forum.interfaces.HttpCallbackListener;
+import com.blogofyb.forum.utils.database.MySQLiteOpenHelper;
 import com.blogofyb.forum.utils.http.Post;
 import com.blogofyb.forum.utils.json.ToHashMap;
 
@@ -38,7 +42,9 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
         public void handleMessage(Message message) {
             switch (message.what) {
                 case Messages.REGISTER_SUCCESS:
-                    // use database to save data
+                    String account = message.getData().getString(Keys.ACCOUNT);
+                    String password = message.getData().getString(Keys.PASSWORD);
+                    registerSuccess(account, password);
                     Intent intent = new Intent(RegisterActivity.this, ForumActivity.class);
                     startActivity(intent);
                     ActivitiesManager.finishAllActivities();
@@ -130,6 +136,8 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
                 if (keyValues != null) {
                     if (ServerInformation.SUCCESS.equals(keyValues.get(Keys.STATUS))) {
                         message.what = Messages.REGISTER_SUCCESS;
+                        bundle.putString(Keys.ACCOUNT, (String) keyValues.get(Keys.ACCOUNT));
+                        bundle.putString(Keys.PASSWORD, (String) keyValues.get(Keys.PASSWORD));
                     } else {
                         message.what = Messages.REGISTER_FAILED;
                         bundle.putString(Keys.MESSAGE, (String) keyValues.get(Keys.MESSAGE));
@@ -224,5 +232,18 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
 
     private void setButtonClickable(boolean value) {
         register.setClickable(value);
+    }
+
+    private void registerSuccess(String account, String password) {
+        SharedPreferences.Editor editor = getSharedPreferences("user", MODE_PRIVATE).edit();
+        editor.putBoolean("haveUser", true);
+        editor.apply();
+        String sql = "INSERT INTO " + SQLite.TABLE_NAME + " VALUES ('" + account + "', '" + password + "');";
+        SQLiteDatabase database = MySQLiteOpenHelper.getDatabase(this);
+        database.execSQL(sql);
+        Intent intent = new Intent(this, ForumActivity.class);
+        intent.putExtra("tourist", false);
+        startActivity(intent);
+        ActivitiesManager.finishAllActivities();
     }
 }

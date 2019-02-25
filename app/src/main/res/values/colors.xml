@@ -3,6 +3,7 @@
     <color name="colorAccent">#D81B60</color>
     <color name="colorBlue">#2196F3</color>
     <color name="colorTheme">#FF9800</color>
+    <color name="colorRipple">#C57700</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorBackground">#EEEEEE</color>
     <color name="colorDark">#000000</color>

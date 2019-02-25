@@ -14,6 +14,11 @@ public class BaseActivity extends AppCompatActivity {
         setNotificationBar();
     }
 
+    @Override
+    public void onBackPressed() {
+        ActivitiesManager.removeActivity(this);
+    }
+
     protected void setNotificationBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN

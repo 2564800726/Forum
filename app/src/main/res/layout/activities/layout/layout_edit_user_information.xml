@@ -113,7 +113,8 @@
             android:layout_weight="1"
             android:id="@+id/et_birthday_month"
             android:inputType="number"
-            android:digits="@string/digits_account"/>
+            android:digits="@string/digits_account"
+            android:maxLength="2"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -127,7 +128,8 @@
             android:layout_weight="1"
             android:id="@+id/et_birthday_day"
             android:inputType="number"
-            android:digits="@string/digits_account"/>
+            android:digits="@string/digits_account"
+            android:maxLength="2"/>
 
     </LinearLayout>
 
@@ -147,9 +149,12 @@
 
         <EditText
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="150dp"
             android:id="@+id/et_signature"
-            android:maxLength="50"/>
+            android:maxLength="50"
+            android:background="@drawable/bg_edit_text"
+            android:layout_marginTop="10dp"
+            android:gravity="top"/>
 
     </LinearLayout>
 

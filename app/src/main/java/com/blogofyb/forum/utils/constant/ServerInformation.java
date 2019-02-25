@@ -33,7 +33,7 @@ public class ServerInformation {
     public static final String SIGN_IN = ADDRESS + "signIn";
 
     // 板块信息
-    public static final String GET_PLATE_INFORMATION = ADDRESS + "getPlateInformation?plate=";
+    public static final String GET_PLATE_INFORMATION = ADDRESS + "plateInformation?id=";
 
     // 获取用户信息
     public static final String GET_USER_INFORMATION = ADDRESS + "userInformation?account=";
@@ -49,6 +49,45 @@ public class ServerInformation {
 
     // 获取帖子的详情
     public static final String GET_POST_DETAIL = ADDRESS + "post?id=";
+
+    // 点赞帖子
+    public static final String PRAISE_POST = ADDRESS + "praisePost";
+
+    // 检查用户是否已经点赞
+    public static final String CHECK_PRAISE = ADDRESS + "checkPraise";
+
+    // 获取帖子的总页数
+    public static final String GET_POST_TOTAL_PAGES = ADDRESS + "totalPages?id=";
+
+    // 提交评论
+    public static final String POST_COMMENT = ADDRESS + "comment";
+
+    // 发表帖子
+    public static final String POST_POST = ADDRESS + "post";
+
+    // 订阅的用户
+    public static final String SUBSCRIBE_USER = ADDRESS + "subscribe?account=";
+
+    // 订阅板块
+    public static final String SUBSCRIBE_PLATE = ADDRESS + "subscribe?id=";
+
+    // 获取已收藏的帖子
+    public static final String STAR = ADDRESS + "star?account=";
+
+    // 获取粉丝列表
+    public static final String FANS = ADDRESS + "fans?account=";
+
+    // 上传图片
+    public static final String UPLOAD_IMAGE = ADDRESS + "uploadImage";
+
+    // 检查是否已经关注
+    public static final String CHECK_SUBSCRIBE = "checkSubscribe?account=";
+
+    // 搜索帖子
+    public static final String SEARCH = ADDRESS + "search?target=";
+
+    // 订阅
+    public static final String SUBSCRIBE = "subscribe";
 
     public static final String SUCCESS = "200";
 }

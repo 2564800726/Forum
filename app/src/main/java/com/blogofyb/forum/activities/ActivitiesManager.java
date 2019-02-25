@@ -25,4 +25,8 @@ public class ActivitiesManager {
             }
         }
     }
+
+    public static Activity getPrior() {
+        return activities.get(activities.size() - 2);
+    }
 }

@@ -16,6 +16,7 @@ import com.blogofyb.forum.activities.PlateActivity;
 import com.blogofyb.forum.activities.PostActivity;
 
 import com.blogofyb.forum.beans.*;
+import com.blogofyb.forum.utils.constant.Keys;
 import com.blogofyb.forum.utils.img.ImageLoader;
 
 import java.util.List;
@@ -78,6 +79,10 @@ public class PlateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(mContext, PostActivity.class);
+                        intent.putExtra("id", recommendPost.getId());
+                        intent.putExtra("title", recommendPost.getTitle());
+                        intent.putExtra(Keys.POST_AUTHOR, recommendPost.getAuthor());
+                        intent.putExtra(Keys.POST_CONTENT, recommendPost.getDescription());
                         mContext.startActivity(intent);
                     }
                 });
@@ -95,6 +100,10 @@ public class PlateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(mContext, PostActivity.class);
+                        intent.putExtra("id", recommendPost.getId());
+                        intent.putExtra("title", recommendPost.getTitle());
+                        intent.putExtra(Keys.POST_AUTHOR, recommendPost.getAuthor());
+                        intent.putExtra(Keys.POST_CONTENT, recommendPost.getDescription());
                         mContext.startActivity(intent);
                     }
                 });

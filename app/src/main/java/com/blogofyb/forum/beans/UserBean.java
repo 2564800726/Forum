@@ -12,6 +12,15 @@ public class UserBean {
     private String fansCount;
     private String startCount;
     private String account;
+    private String birthday;
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
 
     public String getUserName() {
         return userName;

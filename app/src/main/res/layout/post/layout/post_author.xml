@@ -11,6 +11,7 @@
         android:textSize="15sp"
         android:textColor="@color/colorGray"
         android:maxLines="1"
-        android:maxLength="8"/>
+        android:maxLength="11"
+        android:layout_gravity="center|start"/>
 
 </FrameLayout>

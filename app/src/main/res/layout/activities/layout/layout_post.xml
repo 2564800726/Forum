@@ -5,23 +5,25 @@
     android:orientation="vertical">
 
     <include layout="@layout/custom_toolbar"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:id="@+id/tv_post_title_in_post"
-        android:background="@color/colorBackground"/>
-
-    <android.support.v7.widget.RecyclerView
+    <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:id="@+id/rv_floor_list"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp">
-    </android.support.v7.widget.RecyclerView>
+        android:id="@+id/srl_refresh_floor">
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:id="@+id/rv_floor_list"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
+        </android.support.v7.widget.RecyclerView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -47,7 +49,8 @@
             android:layout_height="40dp"
             android:src="@drawable/forward_can_not"
             android:layout_gravity="center"
-            android:id="@+id/iv_forward"/>
+            android:id="@+id/iv_forward"
+            android:background="@drawable/button_selector"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -55,7 +58,7 @@
             android:layout_gravity="center"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:background="@drawable/bg_pager"
+            android:background="@drawable/pager_selector"
             android:padding="2dp"
             android:id="@+id/ll_pager">
 
@@ -71,6 +74,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/tv_divider"
                 android:text="@string/divider"
                 android:textSize="25sp"
                 android:layout_gravity="center"
@@ -92,7 +96,8 @@
             android:layout_height="40dp"
             android:src="@drawable/backward_can"
             android:id="@+id/iv_backward"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:background="@drawable/button_selector"/>
 
         <View
             android:layout_width="0dp"
@@ -100,16 +105,16 @@
             android:layout_weight="1"/>
 
         <Button
-            android:layout_width="60dp"
-            android:layout_height="40dp"
             android:id="@+id/btn_comment"
-            android:background="@drawable/bg_pager"
-            android:text="@string/comment"
-            android:textSize="20sp"
+            android:layout_width="58dp"
+            android:layout_height="40dp"
             android:layout_gravity="center"
-            android:textColor="@color/colorGray"
+            android:layout_marginEnd="10dp"
             android:layout_marginRight="10dp"
-            android:layout_marginEnd="10dp" />
+            android:background="@drawable/pager_selector"
+            android:text="@string/comment"
+            android:textColor="@color/colorGray"
+            android:textSize="20sp" />
 
     </LinearLayout>
 

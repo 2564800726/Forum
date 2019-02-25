@@ -27,7 +27,7 @@
     <Button
         android:layout_width="60dp"
         android:layout_height="wrap_content"
-        android:id="@+id/btn_Subscribe_plate"
+        android:id="@+id/btn_subscribe_plate"
         android:layout_gravity="center"/>
 
 </LinearLayout>

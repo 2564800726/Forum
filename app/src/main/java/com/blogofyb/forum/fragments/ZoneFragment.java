@@ -1,12 +1,18 @@
 package com.blogofyb.forum.fragments;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,16 +23,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.blogofyb.forum.R;
-import com.blogofyb.forum.activities.ActivitiesManager;
+import com.blogofyb.forum.activities.FansActivity;
 import com.blogofyb.forum.activities.MyPostsActivity;
 import com.blogofyb.forum.activities.MyResponseActivity;
 import com.blogofyb.forum.activities.SelectActivity;
 import com.blogofyb.forum.activities.SettingActivity;
-import com.blogofyb.forum.activities.UserMessageActivity;
+import com.blogofyb.forum.activities.StarActivity;
+import com.blogofyb.forum.activities.SubscribeUserActivity;
+import com.blogofyb.forum.activities.UserInformationActivity;
 import com.blogofyb.forum.beans.UserBean;
 import com.blogofyb.forum.interfaces.HttpCallbackListener;
 import com.blogofyb.forum.utils.constant.Keys;
+import com.blogofyb.forum.utils.constant.SQLite;
 import com.blogofyb.forum.utils.constant.ServerInformation;
+import com.blogofyb.forum.utils.database.MySQLiteOpenHelper;
 import com.blogofyb.forum.utils.http.Get;
 import com.blogofyb.forum.utils.img.ImageLoader;
 import com.blogofyb.forum.utils.json.ToHashMap;
@@ -54,15 +64,18 @@ public class ZoneFragment extends Fragment {
     private TextView mFansCount;
     private TextView mStarCount;
     private LinearLayout mGenderAge;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message message) {
             switch (message.what) {
                 case GET_DATA_SUCCESS:
+                    mSwipeRefreshLayout.setRefreshing(false);
                     showData();
                     break;
                 case GET_DATA_FAILED:
+                    mSwipeRefreshLayout.setRefreshing(false);
                     Toast.makeText(getContext(), "加载失败", Toast.LENGTH_SHORT).show();
                     break;
             }
@@ -72,10 +85,23 @@ public class ZoneFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            mAccount = bundle.getString(Keys.ACCOUNT);
+        Activity activity = getActivity();
+        if (activity != null) {
+            SharedPreferences sharedPreferences = activity.getSharedPreferences("user", Context.MODE_PRIVATE);
+            if (sharedPreferences != null) {
+                boolean haveUser = sharedPreferences.getBoolean("haveUser", false);
+                if (haveUser) {
+                    SQLiteDatabase database = MySQLiteOpenHelper.getDatabase(getContext());
+                    Cursor cursor = database.query(SQLite.TABLE_NAME, new String[] {SQLite.ACCOUNT},
+                            null, null, null, null, null);
+                    while (cursor.moveToNext()) {
+                        mAccount = cursor.getString(cursor.getColumnIndex(SQLite.ACCOUNT));
+                    }
+                    cursor.close();
+                }
+            }
+        } else {
+            mAccount = null;
         }
         View view;
         if (mAccount != null) {
@@ -93,6 +119,15 @@ public class ZoneFragment extends Fragment {
             mStarCount = view.findViewById(R.id.tv_star_count);
             mBackground = view.findViewById(R.id.iv_user_background);
             mGenderAge = view.findViewById(R.id.ll_gender_age);
+
+            mSwipeRefreshLayout = view.findViewById(R.id.srl_refresh_user_information);
+            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    getData();
+                }
+            });
 
             TextView myPosts = view.findViewById(R.id.tv_my_posts);
             myPosts.setOnClickListener(new View.OnClickListener() {
@@ -118,7 +153,7 @@ public class ZoneFragment extends Fragment {
             userMessage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(getContext(), UserMessageActivity.class);
+                    Intent intent = new Intent(getContext(), UserInformationActivity.class);
                     intent.putExtra(Keys.ACCOUNT, mAccount);
                     startActivity(intent);
                 }
@@ -132,6 +167,34 @@ public class ZoneFragment extends Fragment {
                     startActivity(intent);
                 }
             });
+
+            view.findViewById(R.id.ll_subscribe_count).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getContext(), SubscribeUserActivity.class);
+                    intent.putExtra(Keys.ACCOUNT, mAccount);
+                    startActivity(intent);
+                }
+            });
+
+            view.findViewById(R.id.ll_fans_count).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getContext(), FansActivity.class);
+                    intent.putExtra(Keys.ACCOUNT, mAccount);
+                    startActivity(intent);
+                }
+            });
+
+            view.findViewById(R.id.ll_star_count).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getContext(), StarActivity.class);
+                    intent.putExtra(Keys.ACCOUNT, mAccount);
+                    startActivity(intent);
+                }
+            });
+
             getData();
         } else  {
             view = inflater.inflate(R.layout.fg_please_login, container, false);
@@ -165,6 +228,7 @@ public class ZoneFragment extends Fragment {
                     mUserBean.setStartCount((String) returnData.get(Keys.STAR_COUNT));
                     mUserBean.setSubscribeCount((String) returnData.get(Keys.SUBSCRIBE_COUNT));
                     mUserBean.setUserName((String) returnData.get(Keys.NIC_NAME));
+                    mUserBean.setBirthday((String) returnData.get(Keys.BIRTHDAY));
                     Message message = new Message();
                     message.what = GET_DATA_SUCCESS;
                     handler.sendMessage(message);
@@ -189,6 +253,9 @@ public class ZoneFragment extends Fragment {
 
         // 设置头像
         mImageLoader.set(mUserHead, mUserBean.getHead());
+
+        // 设置昵称
+        mUserName.setText(mUserBean.getUserName());
 
         // 设置性别
         if ("male".equals(mUserBean.getGender())) {
@@ -244,5 +311,16 @@ public class ZoneFragment extends Fragment {
 
         // 设置收藏数量
         mStarCount.setText(mUserBean.getStartCount());
+
+        saveUserInformation(SQLite.USER_NAME, mUserBean.getUserName());
+        saveUserInformation(SQLite.GENDER, mUserBean.getGender());
+        saveUserInformation(SQLite.BIRTHDAY, mUserBean.getBirthday());
+        saveUserInformation(SQLite.SIGNATURE, mUserBean.getSignature());
+    }
+
+    private void saveUserInformation(String column, String newValue) {
+        SQLiteDatabase database = MySQLiteOpenHelper.getDatabase(getContext());
+        String sql = "UPDATE " + SQLite.TABLE_NAME + " SET " + column + "='" + newValue + "';";
+        database.execSQL(sql);
     }
 }

@@ -31,6 +31,12 @@
     <string name="response">回复</string>
     <string name="divider">/</string>
     <string name="comment">评论</string>
+    <string name="send_comment">发送</string>
+    <string name="title">标题</string>
+    <string name="content">内容</string>
+    <string name="plate">板块</string>
+    <string name="post_post">提交帖子</string>
+    <string name="him_post">他的帖子</string>
 
     <string name="age">年龄：</string>
     <string name="gender">性别：</string>

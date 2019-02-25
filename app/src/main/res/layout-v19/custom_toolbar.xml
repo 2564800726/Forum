@@ -18,8 +18,8 @@
             android:layout_height="40dp"
             android:id="@+id/iv_navigation_icon_left"
             android:layout_gravity="center"
-            android:layout_marginLeft="10dp"
-            android:layout_marginStart="10dp" />
+            android:layout_marginStart="10dp"
+            android:background="@drawable/button_selector"/>
 
         <TextView
             android:layout_width="0dp"
@@ -29,8 +29,8 @@
             android:textSize="20sp"
             android:textColor="@color/colorWhite"
             android:layout_gravity="center"
-            android:layout_marginLeft="20dp"
-            android:layout_marginStart="20dp" />
+            android:layout_marginStart="20dp"
+            android:maxLength="10"/>
 
         <ImageView
             android:layout_width="40dp"

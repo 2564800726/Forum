@@ -30,14 +30,20 @@
 
         <include layout="@layout/post_author"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginLeft="10dp"
-            android:layout_marginStart="10dp" />
+            android:layout_marginStart="10dp"
+            android:layout_gravity="center"/>
 
-        <include layout="@layout/post_edit_date"/>
+        <include layout="@layout/post_edit_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
 
-        <include layout="@layout/post_heat"/>
+        <include layout="@layout/post_heat"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"/>
 
     </LinearLayout>
 

@@ -4,9 +4,21 @@
     android:layout_height="match_parent"
     android:background="@color/colorBackground">
 
-    <TextView
+    <Button
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/subscribe"/>
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_test_upload"
+        android:text="上传"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_upload"
+        android:text="start"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/iv_test_photo"/>
 
 </LinearLayout>
