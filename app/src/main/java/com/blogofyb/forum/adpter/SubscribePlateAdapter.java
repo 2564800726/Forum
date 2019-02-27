@@ -1,5 +1,8 @@
 package com.blogofyb.forum.adpter;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -15,7 +18,9 @@ import com.blogofyb.forum.R;
 import com.blogofyb.forum.beans.PlateBean;
 import com.blogofyb.forum.interfaces.HttpCallbackListener;
 import com.blogofyb.forum.utils.constant.Keys;
+import com.blogofyb.forum.utils.constant.SQLite;
 import com.blogofyb.forum.utils.constant.ServerInformation;
+import com.blogofyb.forum.utils.database.MySQLiteOpenHelper;
 import com.blogofyb.forum.utils.http.Post;
 import com.blogofyb.forum.utils.img.ImageLoader;
 import com.blogofyb.forum.utils.json.ToHashMap;
@@ -31,49 +36,46 @@ public class SubscribePlateAdapter extends RecyclerView.Adapter<SubscribePlateAd
     private ImageLoader mImageLoader;
     private String mAccount;
     private String mPassword;
-    private Button mSubscribePlate;
+    private String mSubscribe;
+    private Handler mHandler;
 
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message message) {
-            switch (message.what) {
-                case SUBSCRIBE_SUCCESS:
-                    setButtonClickable(true);
-                    mSubscribePlate.setText("已订阅");
-                    break;
-                case SUBSCRIBE_FAILED:
-                    setButtonClickable(true);
-                    break;
-            }
-        }
-    };
-
-    public SubscribePlateAdapter(List<PlateBean> mPlates) {
+    public SubscribePlateAdapter(Context mContext, List<PlateBean> mPlates, String mSubscribe, Handler mHandler) {
         this.mPlates = mPlates;
-        mImageLoader = new ImageLoader();
-
+        mImageLoader = new ImageLoader(mContext);
+        this.mSubscribe = mSubscribe;
+        this.mHandler = mHandler;
     }
 
     @NonNull
     @Override
     public PlateHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.subscribe_plate, viewGroup, false);
+        SQLiteDatabase database = MySQLiteOpenHelper.getDatabase(view.getContext());
+        Cursor cursor = database.query(SQLite.TABLE_NAME, new String[]{SQLite.ACCOUNT, SQLite.PASSWORD},
+                null, null, null, null, null);
+        while (cursor.moveToNext()) {
+            mAccount = cursor.getString(cursor.getColumnIndex(SQLite.ACCOUNT));
+            mPassword = cursor.getString(cursor.getColumnIndex(SQLite.PASSWORD));
+        }
+        cursor.close();
         return new PlateHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PlateHolder plateHolder, final int i) {
+    public void onBindViewHolder(@NonNull final PlateHolder plateHolder, final int i) {
         plateHolder.mTextView.setText(mPlates.get(i).getPlateName());
 
         mImageLoader.set(plateHolder.mImageView, mPlates.get(i).getIcon());
-
-        mSubscribePlate = plateHolder.mButton;
+        if (mSubscribe != null && mSubscribe.contains(";" + mPlates.get(i).getId() + ";")) {
+            plateHolder.mButton.setText("已订阅");
+        } else {
+            plateHolder.mButton.setText("订阅");
+        }
 
         plateHolder.mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setButtonClickable(false);
-                subscribePlate(mPlates.get(i).getId());
+                subscribePlate(mPlates.get(plateHolder.getAdapterPosition()).getId());
             }
         });
     }
@@ -95,7 +97,7 @@ public class SubscribePlateAdapter extends RecyclerView.Adapter<SubscribePlateAd
                 if (returnData != null && ServerInformation.SUCCESS.equals(returnData.get(Keys.STATUS))) {
                     Message message = new Message();
                     message.what = SUBSCRIBE_SUCCESS;
-                    handler.sendMessage(message);
+                    mHandler.sendMessage(message);
                     return;
                 }
                 onFailure(null);
@@ -105,17 +107,14 @@ public class SubscribePlateAdapter extends RecyclerView.Adapter<SubscribePlateAd
             public void onFailure(Exception e) {
                 Message message = new Message();
                 message.what = SUBSCRIBE_FAILED;
-                handler.sendMessage(message);
+                mHandler.sendMessage(message);
             }
         });
     }
 
-    private void setButtonClickable(boolean value) {
-        mSubscribePlate.setClickable(value);
-    }
-
-    public void refreshData(List<PlateBean> mPlates) {
+    public void refreshData(List<PlateBean> mPlates, String mSubscribe) {
         this.mPlates = mPlates;
+        this.mSubscribe = mSubscribe;
         notifyDataSetChanged();
     }
 

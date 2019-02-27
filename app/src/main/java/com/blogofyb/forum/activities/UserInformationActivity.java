@@ -79,7 +79,7 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
         ActivitiesManager.addActivity(this);
         setContentView(R.layout.layout_user_information);
 
-        mImageLoader = new ImageLoader();
+        mImageLoader = new ImageLoader(this);
 
         Intent intent = getIntent();
         if (intent != null) {
@@ -115,10 +115,12 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
         mBackground = findViewById(R.id.iv_user_background);
         mGenderAge = findViewById(R.id.ll_gender_age);
 
-        mSubscribe = findViewById(R.id.btn_Subscribe_user);
+        mSubscribe = findViewById(R.id.btn_subscribe_user);
         findViewById(R.id.ll_subscribe_count).setOnClickListener(this);
         findViewById(R.id.ll_star_count).setOnClickListener(this);
         findViewById(R.id.ll_fans_count).setOnClickListener(this);
+        findViewById(R.id.tv_him_post).setOnClickListener(this);
+
         SharedPreferences sharedPreferences = getSharedPreferences("user", MODE_PRIVATE);
         if (sharedPreferences.getBoolean("haveUser", false)) {
             mSubscribe.setOnClickListener(this);
@@ -127,6 +129,7 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
             mSubscribe.setVisibility(View.GONE);
         }
         getData();
+        checkSubscribe();
     }
 
     private void setButton() {
@@ -141,7 +144,8 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
         HashMap<String, String> body = new HashMap<>();
         body.put(Keys.ACCOUNT, mAccount);
         body.put(Keys.PASSWORD, mPassword);
-        Post.sendHttpRequest(ServerInformation.CHECK_SUBSCRIBE + mUser, body, new HttpCallbackListener() {
+        body.put(Keys.USER, mUser);
+        Post.sendHttpRequest(ServerInformation.CHECK_SUBSCRIBE, body, new HttpCallbackListener() {
             @Override
             public void onFinish(String response) {
                 HashMap returnData = ToHashMap.getInstance().transform(response);
@@ -189,8 +193,13 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
                 intent2.putExtra(Keys.ACCOUNT, mUser);
                 startActivity(intent2);
                 break;
-            case R.id.btn_Subscribe_user:
+            case R.id.btn_subscribe_user:
                 subscribeUser();
+                break;
+            case R.id.tv_him_post:
+                Intent intent3 = new Intent(UserInformationActivity.this, MyPostsActivity.class);
+                intent3.putExtra(Keys.ACCOUNT, mUser);
+                startActivity(intent3);
                 break;
         }
     }
@@ -199,7 +208,8 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
         HashMap<String, String> body = new HashMap<>();
         body.put(Keys.ACCOUNT, mAccount);
         body.put(Keys.PASSWORD, mPassword);
-        Post.sendHttpRequest(ServerInformation.SUBSCRIBE_USER + mUser, body, new HttpCallbackListener() {
+        body.put(Keys.USER, mUser);
+        Post.sendHttpRequest(ServerInformation.SUBSCRIBE, body, new HttpCallbackListener() {
             @Override
             public void onFinish(String response) {
                 HashMap returnData = ToHashMap.getInstance().transform(response);

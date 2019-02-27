@@ -34,7 +34,7 @@ public class PlateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         this.mPlates = mPlates;
         this.mRecommendPost = mRecommendPost;
         this.mContext = mContext;
-        mImageLoader = new ImageLoader();
+        mImageLoader = new ImageLoader(mContext);
     }
 
     @Override

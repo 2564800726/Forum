@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -13,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -105,7 +107,7 @@ public class ZoneFragment extends Fragment {
         }
         View view;
         if (mAccount != null) {
-            mImageLoader = new ImageLoader();
+            mImageLoader = new ImageLoader(getContext());
 
             view = inflater.inflate(R.layout.fg_zone, container, false);
             mUserHead = view.findViewById(R.id.civ_user_head);
@@ -144,16 +146,6 @@ public class ZoneFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getContext(), MyResponseActivity.class);
-                    intent.putExtra(Keys.ACCOUNT, mAccount);
-                    startActivity(intent);
-                }
-            });
-
-            TextView userMessage = view.findViewById(R.id.tv_user_message);
-            userMessage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(getContext(), UserInformationActivity.class);
                     intent.putExtra(Keys.ACCOUNT, mAccount);
                     startActivity(intent);
                 }
@@ -249,8 +241,11 @@ public class ZoneFragment extends Fragment {
 
     private void showData() {
         // 设置背景
-        mImageLoader.set(mBackground, mUserBean.getBackground());
+//        mImageLoader.set(mBackground, mUserBean.getBackground());
 
+        new ImageLoadTask().execute(mUserBean.getBackground());
+        System.out.println("TAG" + "_MESSAGE_TEST_" + mBackground.getWidth() + "_" + mBackground.getHeight());
+        System.out.println("TAG");
         // 设置头像
         mImageLoader.set(mUserHead, mUserBean.getHead());
 
@@ -322,5 +317,13 @@ public class ZoneFragment extends Fragment {
         SQLiteDatabase database = MySQLiteOpenHelper.getDatabase(getContext());
         String sql = "UPDATE " + SQLite.TABLE_NAME + " SET " + column + "='" + newValue + "';";
         database.execSQL(sql);
+    }
+
+    public class ImageLoadTask extends AsyncTask<String, Void, Void> {
+        @Override
+        protected Void doInBackground(String... strings) {
+            mImageLoader.set(mBackground, strings[0]);
+            return null;
+        }
     }
 }

@@ -30,7 +30,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserHo
     public UserListAdapter(List<UserBean> mUsers, Context mContext) {
         this.mUsers = mUsers;
         this.mContext = mContext;
-        mImageLoader = new ImageLoader();
+        mImageLoader = new ImageLoader(mContext);
     }
 
     @NonNull

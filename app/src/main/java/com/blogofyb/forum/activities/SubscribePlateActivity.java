@@ -1,5 +1,6 @@
 package com.blogofyb.forum.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -18,6 +19,7 @@ import com.blogofyb.forum.interfaces.HttpCallbackListener;
 import com.blogofyb.forum.utils.constant.Keys;
 import com.blogofyb.forum.utils.constant.ServerInformation;
 import com.blogofyb.forum.utils.http.Get;
+import com.blogofyb.forum.utils.json.ToHashMap;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,12 +29,17 @@ import java.util.HashMap;
 import java.util.List;
 
 public class SubscribePlateActivity extends BaseActivity {
-    private final int GET_PLATES_SUCCESS = 0;
     private final int GET_PLATES_FAILED = 1;
     private final int REFRESH_SUCCESS = 2;
+    private final int ALL_SUCCESS = 3;
+    private final int SUBSCRIBE_SUCCESS = 0;
 
     private List<PlateBean> mPlates;
+    private List<String> mSubscribePlates;
     private SubscribePlateAdapter mAdapter;
+    private boolean isGetSubscribeSuccess = false;
+    private boolean isGetPlatesSuccess = false;
+    private String mAccount;
 
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -42,16 +49,20 @@ public class SubscribePlateActivity extends BaseActivity {
         @Override
         public void handleMessage(Message message) {
             switch (message.what) {
-                case GET_PLATES_SUCCESS:
-                    showData();
-                    break;
                 case GET_PLATES_FAILED:
                     mSwipeRefreshLayout.setRefreshing(false);
                     Toast.makeText(SubscribePlateActivity.this, "加载失败", Toast.LENGTH_SHORT).show();
                     break;
                 case REFRESH_SUCCESS:
                     mSwipeRefreshLayout.setRefreshing(false);
-                    refreshData();
+                    mAdapter.refreshData(mPlates, mSubscribePlates.toString());
+                case ALL_SUCCESS:
+                    showData();
+                    break;
+                case SUBSCRIBE_SUCCESS:
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    loadBeans();
+                    break;
             }
         }
     };
@@ -61,6 +72,12 @@ public class SubscribePlateActivity extends BaseActivity {
         super.onCreate(saveInstanceState);
         ActivitiesManager.addActivity(this);
         setContentView(R.layout.layout_subscribe_plate);
+
+        Intent intent = getIntent();
+        if (intent != null) {
+            mAccount = intent.getStringExtra(Keys.ACCOUNT);
+        }
+
         mRecyclerView = findViewById(R.id.rv_Subscribe_plate);
         mSwipeRefreshLayout = findViewById(R.id.srl_refresh_plates);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -85,6 +102,65 @@ public class SubscribePlateActivity extends BaseActivity {
     }
 
     private void loadBeans() {
+        getPlates();
+        getSubscribePlate();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int count = 0;
+                while ((!isGetPlatesSuccess || !isGetSubscribeSuccess) && count < 50) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    count++;
+                }
+                Message message = new Message();
+                if (isGetPlatesSuccess && isGetSubscribeSuccess) {
+                    if (mSwipeRefreshLayout.isRefreshing()) {
+                        message.what = REFRESH_SUCCESS;
+                    } else {
+                        message.what = ALL_SUCCESS;
+                    }
+                } else {
+                    message.what = GET_PLATES_FAILED;
+                }
+                handler.sendMessage(message);
+            }
+        }).start();
+    }
+
+    private void getSubscribePlate() {
+        isGetSubscribeSuccess = false;
+        mSubscribePlates = new ArrayList<>();
+        Get.sendHttpRequest(ServerInformation.GET_PLATES_WITH_ACCOUNT + mAccount, new HttpCallbackListener() {
+            @Override
+            public void onFinish(String response) {
+                try {
+                    JSONArray jsonArray = new JSONObject(response).getJSONArray(Keys.RETURN_DATA);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject object = jsonArray.getJSONObject(i);
+                        mSubscribePlates.add(";" + object.getString(Keys.ID) + ";");
+                    }
+                    isGetSubscribeSuccess = true;
+                } catch (Exception e) {
+                    onFailure(e);
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                isGetSubscribeSuccess = false;
+                Message message = new Message();
+                message.what = GET_PLATES_FAILED;
+                handler.sendMessage(message);
+            }
+        });
+    }
+
+    private void getPlates() {
+        isGetPlatesSuccess = false;
         mPlates = new ArrayList<>();
         Get.sendHttpRequest(ServerInformation.GET_PLATES_WITHOUT_ACCOUNT, new HttpCallbackListener() {
             @Override
@@ -100,13 +176,7 @@ public class SubscribePlateActivity extends BaseActivity {
                         plateBean.setId(object.getString(Keys.ID));
                         mPlates.add(plateBean);
                     }
-                    Message message = new Message();
-                    if (mSwipeRefreshLayout.isRefreshing()) {
-                        message.what = REFRESH_SUCCESS;
-                    } else {
-                        message.what = GET_PLATES_SUCCESS;
-                    }
-                    handler.sendMessage(message);
+                    isGetPlatesSuccess = true;
                 } catch (Exception e) {
                     onFailure(e);
                 }
@@ -114,6 +184,7 @@ public class SubscribePlateActivity extends BaseActivity {
 
             @Override
             public void onFailure(Exception e) {
+                isGetPlatesSuccess = false;
                 Message message = new Message();
                 message.what = GET_PLATES_FAILED;
                 handler.sendMessage(message);
@@ -122,12 +193,8 @@ public class SubscribePlateActivity extends BaseActivity {
     }
 
     private void showData() {
-        mAdapter = new SubscribePlateAdapter(mPlates);
+        mAdapter = new SubscribePlateAdapter(this, mPlates, mSubscribePlates.toString(), handler);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mAdapter);
-    }
-
-    private void refreshData() {
-        mAdapter.refreshData(mPlates);
     }
 }

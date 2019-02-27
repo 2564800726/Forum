@@ -101,7 +101,6 @@ public class SearchActivity extends BaseActivity {
                 } else {
                     mTargetString = mTarget.getText().toString();
                     setButtonClickable(false);
-                    mSwipeRefreshLayout.setRefreshing(true);
                     loadBean();
                 }
             }

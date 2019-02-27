@@ -2,7 +2,6 @@
 <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="10dp"
     android:id="@+id/srl_refresh_user_information">
 
     <LinearLayout
@@ -21,7 +20,8 @@
             android:text="@string/my_posts"
             android:drawableRight="@drawable/open"
             android:drawableEnd="@drawable/open"
-            android:layout_marginTop="20dp"/>
+            android:layout_marginTop="20dp"
+            android:layout_margin="10dp"/>
 
         <!--我的回复-->
         <TextView
@@ -32,18 +32,8 @@
             android:textSize="20sp"
             android:drawableRight="@drawable/open"
             android:drawableEnd="@drawable/open"
-            android:layout_marginTop="5dp"/>
-
-        <!--消息-->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/tv_user_message"
-            android:textSize="20sp"
-            android:text="@string/user_message"
-            android:drawableRight="@drawable/open"
-            android:drawableEnd="@drawable/open"
-            android:layout_marginTop="5dp"/>
+            android:layout_marginTop="5dp"
+            android:layout_margin="10dp"/>
 
         <!--设置-->
         <TextView
@@ -54,7 +44,8 @@
             android:textSize="20sp"
             android:drawableRight="@drawable/open"
             android:drawableEnd="@drawable/open"
-            android:layout_marginTop="5dp"/>
+            android:layout_marginTop="5dp"
+            android:layout_margin="10dp"/>
 
     </LinearLayout>
 

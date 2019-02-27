@@ -180,6 +180,7 @@ public class ForumActivity extends BaseActivity implements View.OnClickListener 
                         @Override
                         public void onClick(View v) {
                             Intent intent = new Intent(ForumActivity.this, SubscribePlateActivity.class);
+                            intent.putExtra(Keys.ACCOUNT, mAccount);
                             startActivity(intent);
                         }
                     });

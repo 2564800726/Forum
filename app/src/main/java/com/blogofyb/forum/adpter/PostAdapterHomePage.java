@@ -37,7 +37,7 @@ public class PostAdapterHomePage extends RecyclerView.Adapter<RecyclerView.ViewH
     public PostAdapterHomePage(Context mContext, List<HashMap<String, String>> data) {
         this.data = data;
         this.mContext = mContext;
-        mImageLoader = new ImageLoader();
+        mImageLoader = new ImageLoader(mContext);
         SharedPreferences sharedPreferences = mContext.getSharedPreferences("user", Context.MODE_PRIVATE);
         mHaveUser = sharedPreferences.getBoolean("haveUser", false);
     }

@@ -68,9 +68,6 @@ public class ServerInformation {
     // 订阅的用户
     public static final String SUBSCRIBE_USER = ADDRESS + "subscribe?account=";
 
-    // 订阅板块
-    public static final String SUBSCRIBE_PLATE = ADDRESS + "subscribe?id=";
-
     // 获取已收藏的帖子
     public static final String STAR = ADDRESS + "star?account=";
 
@@ -81,13 +78,16 @@ public class ServerInformation {
     public static final String UPLOAD_IMAGE = ADDRESS + "uploadImage";
 
     // 检查是否已经关注
-    public static final String CHECK_SUBSCRIBE = "checkSubscribe?account=";
+    public static final String CHECK_SUBSCRIBE = ADDRESS + "checkSubscribe";
 
     // 搜索帖子
     public static final String SEARCH = ADDRESS + "search?target=";
 
     // 订阅
-    public static final String SUBSCRIBE = "subscribe";
+    public static final String SUBSCRIBE = ADDRESS + "subscribe";
+
+    // 用户的帖子
+    public static final String USER_POSTS = ADDRESS + "posts?account=";
 
     public static final String SUCCESS = "200";
 }

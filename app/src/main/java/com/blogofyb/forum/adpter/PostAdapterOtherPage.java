@@ -36,7 +36,7 @@ public class PostAdapterOtherPage extends RecyclerView.Adapter<RecyclerView.View
     public PostAdapterOtherPage(Context mContext, List<HashMap<String, String>> data) {
         this.mContext = mContext;
         this.data = data;
-        mImageLoader = new ImageLoader();
+        mImageLoader = new ImageLoader(mContext);
         SharedPreferences sharedPreferences = mContext.getSharedPreferences("user", Context.MODE_PRIVATE);
         mHaveUser = sharedPreferences.getBoolean("haveUser", false);
     }

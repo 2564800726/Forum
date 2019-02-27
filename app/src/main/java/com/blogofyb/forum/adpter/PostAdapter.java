@@ -29,7 +29,7 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public PostAdapter(List<PostBean> mPosts, Context mContext) {
         this.mPosts = mPosts;
         this.mContext = mContext;
-        mImageLoader = new ImageLoader();
+        mImageLoader = new ImageLoader(mContext);
     }
 
     @Override

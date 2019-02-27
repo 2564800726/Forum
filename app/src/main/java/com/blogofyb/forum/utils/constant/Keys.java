@@ -43,4 +43,5 @@ public class Keys {
     public static final String ANOTHER = "another";
     public static final String TOTAL_PAGES = "pages";
     public static final String TIME = "edit_time";
+    public static final String USER = "user";
 }

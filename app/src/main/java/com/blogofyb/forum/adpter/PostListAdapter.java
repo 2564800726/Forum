@@ -67,7 +67,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         this.mPosts = mPosts;
         this.mTopPosts = mTopPosts;
         this.mPlateInformation = mPlateInformation;
-        mImageLoader = new ImageLoader();
+        mImageLoader = new ImageLoader(mContext);
         this.mContext = mContext;
     }
 
@@ -75,9 +75,9 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public int getItemViewType(int position) {
         if (position == 0) {
             return TYPE_INFORMATION;
-        } else if (position < mTopPosts.size()) {
+        } else if (position < mTopPosts.size() + 1) {
             return TYPE_TOP;
-        } else if (position < mPosts.size()){
+        } else if (position < mPosts.size() + mTopPosts.size() + 1){
             return TYPE_ANOTHER;
         } else {
             return TYPE_END;
@@ -88,13 +88,13 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view;
-        if (getItemViewType(i) == TYPE_INFORMATION) {
+        if (i == TYPE_INFORMATION) {
             view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.plate_information, viewGroup, false);
             return new PlateInformationHolder(view);
-        } else if (getItemViewType(i) == TYPE_TOP) {
+        } else if (i == TYPE_TOP) {
             view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.top, viewGroup, false);
             return new TopPostHolder(view);
-        } else if (getItemViewType(i) == TYPE_ANOTHER){
+        } else if (i == TYPE_ANOTHER){
             if ("".equals(mPosts.get(0).getIcon()) || mPosts.get(0).getIcon() == null) {
                 view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recommend_post_no_pic, viewGroup, false);
                 return new AnotherPostsNoPicHolder(view);
@@ -111,7 +111,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int i) {
-        if (i == TYPE_INFORMATION) {
+        if (getItemViewType(i) == TYPE_INFORMATION) {
             PlateInformationHolder holder = (PlateInformationHolder) viewHolder;
             holder.mPlateName.setText(mPlateInformation.get(i).getName());
 
@@ -155,56 +155,53 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     mContext.startActivity(intent);
                 }
             });
-        } else if (i == TYPE_TOP) {
+        } else if (getItemViewType(i) == TYPE_TOP) {
             TopPostHolder holder = (TopPostHolder) viewHolder;
-            holder.mTopTitle.setText(mTopPosts.get(i).getTitle());
+            holder.mTopTitle.setText(mTopPosts.get(i - 1).getTitle());
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(mContext, PostActivity.class);
-                    intent.putExtra(Keys.ID, mTopPosts.get(i).getId());
+                    intent.putExtra(Keys.ID, mTopPosts.get(i - 1).getId());
                     mContext.startActivity(intent);
                 }
             });
-        } else if (i == TYPE_ANOTHER){
+        } else if (getItemViewType(i) == TYPE_ANOTHER){
             if (viewHolder instanceof AnotherPostsHavePicHolder) {
                 final AnotherPostsHavePicHolder holder = (AnotherPostsHavePicHolder) viewHolder;
-                final PostBean recommendPost = mPosts.get(i);
-                holder.mPostTitle.setText(recommendPost.getTitle());
-                holder.mPostDescription.setText(recommendPost.getDescription());
-                holder.mPostAuthor.setText(recommendPost.getAuthor());
-                holder.mPostVisit.setText(recommendPost.getVisit());
-                holder.mPostDiscuss.setText(recommendPost.getDiscuss());
-                holder.mPostEditDate.setText(recommendPost.getDate());
+                final PostBean postBean = mPosts.get(i - mTopPosts.size() - 1);
+                holder.mPostTitle.setText(postBean.getTitle());
+                holder.mPostDescription.setText(postBean.getDescription());
+                holder.mPostAuthor.setText(postBean.getAuthor());
+                holder.mPostVisit.setText(postBean.getVisit());
+                holder.mPostDiscuss.setText(postBean.getDiscuss());
+                holder.mPostEditDate.setText(postBean.getDate());
 
-//                holder.mPostIcon.setTag(recommendPost.getIcon());
-                mImageLoader.set(holder.mPostIcon, recommendPost.getIcon());
+                mImageLoader.set(holder.mPostIcon, postBean.getIcon());
 
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(mContext, PostActivity.class);
-                        intent.putExtra(Keys.POST_AUTHOR, recommendPost.getAuthor());
-                        intent.putExtra(Keys.POST_CONTENT, recommendPost.getDescription());
+                        intent.putExtra(Keys.ID, postBean.getId());
                         mContext.startActivity(intent);
                     }
                 });
             } else {
                 final AnotherPostsNoPicHolder holder = (AnotherPostsNoPicHolder) viewHolder;
-                final PostBean recommendPost = mPosts.get(i);
-                holder.mPostTitle.setText(recommendPost.getTitle());
-                holder.mPostDescription.setText(recommendPost.getDescription());
-                holder.mPostAuthor.setText(recommendPost.getAuthor());
-                holder.mPostVisit.setText(recommendPost.getVisit());
-                holder.mPostDiscuss.setText(recommendPost.getDiscuss());
-                holder.mPostEditDate.setText(recommendPost.getDate());
+                final PostBean postBean = mPosts.get(i - mTopPosts.size() - 1);
+                holder.mPostTitle.setText(postBean.getTitle());
+                holder.mPostDescription.setText(postBean.getDescription());
+                holder.mPostAuthor.setText(postBean.getAuthor());
+                holder.mPostVisit.setText(postBean.getVisit());
+                holder.mPostDiscuss.setText(postBean.getDiscuss());
+                holder.mPostEditDate.setText(postBean.getDate());
 
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(mContext, PostActivity.class);
-                        intent.putExtra(Keys.POST_AUTHOR, recommendPost.getAuthor());
-                        intent.putExtra(Keys.POST_CONTENT, recommendPost.getDescription());
+                        intent.putExtra(Keys.ID, postBean.getId());
                         mContext.startActivity(intent);
                     }
                 });

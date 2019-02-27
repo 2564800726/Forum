@@ -34,14 +34,9 @@ import java.util.HashMap;
 import java.util.List;
 
 public class PlateActivity extends BaseActivity {
-    private final int GET_POSTS_SUCCESS = 0;
-    private final int GET_POSTS_FAILED = 1;
-    private final int GET_PLATE_INFORMATION_SUCCESS = 2;
-    private final int GET_PLATE_INFORMATION_FAILED = 3;
-    private final int GET_TOP_POSTS_SUCCESS = 4;
-    private final int GET_TOP_POSTS_FAILED = 5;
-    private final int ALL_SUCCESS = 6;
-    private final int ALL_FAILED = 7;
+    private final int REFRESH_FINISH = 0;
+    private final int SUCCESS = 1;
+    private final int FAILED = 2;
 
     private boolean getPostsFinish = false;
     private boolean getPlateInformationFinish = false;
@@ -61,29 +56,14 @@ public class PlateActivity extends BaseActivity {
         @Override
         public void handleMessage(Message message) {
             switch (message.what) {
-                case GET_POSTS_SUCCESS:
-                    getPostsFinish = true;
-                    break;
-                case GET_PLATE_INFORMATION_SUCCESS:
-                    getPlateInformationFinish = true;
-                    break;
-                case GET_TOP_POSTS_SUCCESS:
-                    getTopPostsFinish = true;
-                    break;
-                case GET_POSTS_FAILED:
-                    getPostsFinish = false;
-                    break;
-                case GET_PLATE_INFORMATION_FAILED:
-                    getPlateInformationFinish = false;
-                    break;
-                case GET_TOP_POSTS_FAILED:
-                    getTopPostsFinish = false;
-                    break;
-                case ALL_SUCCESS:
+                case REFRESH_FINISH:
                     mSwipeRefreshLayout.setRefreshing(false);
+                    mAdapter.refreshData(mPlateInformation, mTopPosts, mPosts);
+                    break;
+                case SUCCESS:
                     setData();
                     break;
-                case ALL_FAILED:
+                case FAILED:
                     mSwipeRefreshLayout.setRefreshing(false);
                     Toast.makeText(PlateActivity.this, "加载失败", Toast.LENGTH_SHORT).show();
                     break;
@@ -101,7 +81,6 @@ public class PlateActivity extends BaseActivity {
         }
         setContentView(R.layout.layout_plate);
         mRecyclerView = findViewById(R.id.rv_post_list);
-        mAdapter = new PostListAdapter(mPosts, mTopPosts, mPlateInformation, this);
         mSwipeRefreshLayout = findViewById(R.id.srl_refresh_post);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -135,6 +114,12 @@ public class PlateActivity extends BaseActivity {
         mPosts = new ArrayList<>();
         mPlateInformation = new ArrayList<>();
         mTopPosts = new ArrayList<>();
+        getPlateInformationFinish = false;
+        getPostsFinish = false;
+        getTopPostsFinish = false;
+        getPosts();
+        getPlateInformation();
+        getTopPosts();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -149,16 +134,17 @@ public class PlateActivity extends BaseActivity {
                 }
                 Message message = new Message();
                 if (getPostsFinish && getPlateInformationFinish && getTopPostsFinish) {
-                    message.what = ALL_SUCCESS;
+                    if (mSwipeRefreshLayout.isRefreshing()) {
+                        message.what = REFRESH_FINISH;
+                    } else {
+                        message.what = SUCCESS;
+                    }
                 } else {
-                    message.what = ALL_FAILED;
+                    message.what = FAILED;
                 }
                 handler.sendMessage(message);
             }
         }).start();
-        getPosts();
-        getPlateInformation();
-        getTopPosts();
     }
 
     private void getPosts() {
@@ -179,22 +165,19 @@ public class PlateActivity extends BaseActivity {
                         postBean.setDescription(object.getString(Keys.POST_DESCRIPTION));
                         postBean.setAuthor(object.getString(Keys.POST_AUTHOR));
                         postBean.setTitle(object.getString(Keys.POST_TITLE));
+                        postBean.setTime(object.getString(Keys.TIME));
                         mPosts.add(postBean);
-                        Message message = new Message();
-                        message.what = GET_POSTS_SUCCESS;
-                        handler.sendMessage(message);
+                        getPostsFinish = true;
                     }
                 } catch (JSONException e) {
-                    e.printStackTrace();
                     onFailure(e);
                 }
             }
 
             @Override
             public void onFailure(Exception e) {
-                Message message = new Message();
-                message.what = GET_POSTS_FAILED;
-                handler.sendMessage(message);
+                e.printStackTrace();
+                getPostsFinish = false;
             }
         });
     }
@@ -210,9 +193,7 @@ public class PlateActivity extends BaseActivity {
                     plateInformationBean.setName((String) returnData.get(Keys.PLATE_NAME));
                     plateInformationBean.setId((String) returnData.get(Keys.ID));
                     mPlateInformation.add(plateInformationBean);
-                    Message message = new Message();
-                    message.what = GET_PLATE_INFORMATION_SUCCESS;
-                    handler.sendMessage(message);
+                    getPlateInformationFinish = true;
                     return;
                 }
                 onFailure(null);
@@ -220,9 +201,10 @@ public class PlateActivity extends BaseActivity {
 
             @Override
             public void onFailure(Exception e) {
-                Message message = new Message();
-                message.what = GET_PLATE_INFORMATION_FAILED;
-                handler.sendMessage(message);
+                if (e != null) {
+                    e.printStackTrace();
+                }
+                getPlateInformationFinish = false;
             }
         });
     }
@@ -231,30 +213,31 @@ public class PlateActivity extends BaseActivity {
         Get.sendHttpRequest(ServerInformation.GET_RECOMMEND_POST_WITH_PLATE + mPlateId, new HttpCallbackListener() {
             @Override
             public void onFinish(String response) {
-                HashMap returnData = ToHashMap.getInstance().transform(response);
-                if (returnData != null) {
-                    TopPostBean topPostBean = new TopPostBean();
-                    topPostBean.setTitle((String) returnData.get(Keys.POST_TITLE));
-                    topPostBean.setId((String) returnData.get(Keys.ID));
-                    mTopPosts.add(topPostBean);
-                    Message message = new Message();
-                    message.what = GET_TOP_POSTS_SUCCESS;
-                    handler.sendMessage(message);
-                    return;
+                try {
+                    JSONArray jsonArray = new JSONObject(response).getJSONArray(Keys.RETURN_DATA);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject object = jsonArray.getJSONObject(i);
+                        TopPostBean topPostBean = new TopPostBean();
+                        topPostBean.setId(object.getString(Keys.ID));
+                        topPostBean.setTitle(object.getString(Keys.POST_TITLE));
+                        mTopPosts.add(topPostBean);
+                        getTopPostsFinish = true;
+                    }
+                } catch (Exception e) {
+                    onFailure(e);
                 }
-                onFailure(null);
             }
 
             @Override
             public void onFailure(Exception e) {
-                Message message = new Message();
-                message.what = GET_TOP_POSTS_FAILED;
-                handler.sendMessage(message);
+                e.printStackTrace();
+                getTopPostsFinish = false;
             }
         });
     }
 
     private void setData() {
+        mAdapter = new PostListAdapter(mPosts, mTopPosts, mPlateInformation, this);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mAdapter);
     }

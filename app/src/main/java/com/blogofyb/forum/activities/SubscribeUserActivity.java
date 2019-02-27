@@ -89,7 +89,7 @@ public class SubscribeUserActivity extends BaseActivity {
 
     private void loadBeans() {
         mUsers = new ArrayList<>();
-        Get.sendHttpRequest(ServerInformation.GET_SUBSCRIBE_USER + mAccount, new HttpCallbackListener() {
+        Get.sendHttpRequest(ServerInformation.SUBSCRIBE_USER + mAccount, new HttpCallbackListener() {
             @Override
             public void onFinish(String response) {
                 try {
