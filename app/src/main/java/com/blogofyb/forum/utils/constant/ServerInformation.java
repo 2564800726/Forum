@@ -74,9 +74,6 @@ public class ServerInformation {
     // 获取粉丝列表
     public static final String FANS = ADDRESS + "fans?account=";
 
-    // 上传图片
-    public static final String UPLOAD_IMAGE = ADDRESS + "uploadImage";
-
     // 检查是否已经关注
     public static final String CHECK_SUBSCRIBE = ADDRESS + "checkSubscribe";
 
@@ -88,6 +85,9 @@ public class ServerInformation {
 
     // 用户的帖子
     public static final String USER_POSTS = ADDRESS + "posts?account=";
+
+    // 关注的用户的帖子
+    public static final String SUBSCRIBE_POSTS = ADDRESS + "subscribe?subscribe=";
 
     public static final String SUCCESS = "200";
 }

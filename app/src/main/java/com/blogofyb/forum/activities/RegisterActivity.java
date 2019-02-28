@@ -127,7 +127,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
         body.put(Keys.VERIFICATION_CODE, verificationCode.getText().toString());
         body.put(Keys.ACCOUNT, account.getText().toString());
         body.put(Keys.PASSWORD, password.getText().toString());
-        Post.sendHttpRequest(ServerInformation.ADDRESS + "register", body, new HttpCallbackListener() {
+        Post.sendHttpRequest(ServerInformation.REGISTER, body, new HttpCallbackListener() {
             @Override
             public void onFinish(String response) {
                 Message message = new Message();
@@ -165,7 +165,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
     private void getVerificationCode() {
         HashMap<String, String> body = new HashMap<>();
         body.put(Keys.ACCOUNT, account.getText().toString());
-        Post.sendHttpRequest(ServerInformation.ADDRESS + "getVerificationCode", body, new HttpCallbackListener() {
+        Post.sendHttpRequest(ServerInformation.GET_VERIFICATION_CODE, body, new HttpCallbackListener() {
             @Override
             public void onFinish(String response) {
                 Message message = new Message();
@@ -238,7 +238,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
         SharedPreferences.Editor editor = getSharedPreferences("user", MODE_PRIVATE).edit();
         editor.putBoolean("haveUser", true);
         editor.apply();
-        String sql = "INSERT INTO " + SQLite.TABLE_NAME + " VALUES ('" + account + "', '" + password + "');";
+        String sql = "INSERT INTO " + SQLite.TABLE_NAME + "(" + SQLite.ACCOUNT + ", " + SQLite.PASSWORD + ")" + " VALUES ('" + account + "', '" + password + "');";
         SQLiteDatabase database = MySQLiteOpenHelper.getDatabase(this);
         database.execSQL(sql);
         Intent intent = new Intent(this, ForumActivity.class);

@@ -61,12 +61,15 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
         public void handleMessage(Message message) {
             switch (message.what) {
                 case FINISH:
+                    setButtonClickable(true);
                     setButton();
                     break;
                 case GET_DATA_FAILED:
+                    setButtonClickable(true);
                     Toast.makeText(UserInformationActivity.this, "加载失败", Toast.LENGTH_SHORT).show();
                     break;
                 case GET_DATA_SUCCESS:
+                    setButtonClickable(true);
                     showData();
                     break;
             }
@@ -122,7 +125,7 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
         findViewById(R.id.tv_him_post).setOnClickListener(this);
 
         SharedPreferences sharedPreferences = getSharedPreferences("user", MODE_PRIVATE);
-        if (sharedPreferences.getBoolean("haveUser", false)) {
+        if (sharedPreferences.getBoolean("haveUser", false) && !mAccount.equals(mUser)) {
             mSubscribe.setOnClickListener(this);
             checkSubscribe();
         } else {
@@ -141,6 +144,8 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
     }
 
     private void checkSubscribe() {
+        isSubscribe = false;
+        setButtonClickable(false);
         HashMap<String, String> body = new HashMap<>();
         body.put(Keys.ACCOUNT, mAccount);
         body.put(Keys.PASSWORD, mPassword);
@@ -194,6 +199,7 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
                 startActivity(intent2);
                 break;
             case R.id.btn_subscribe_user:
+                setButtonClickable(false);
                 subscribeUser();
                 break;
             case R.id.tv_him_post:
@@ -336,5 +342,9 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
 
         // 设置收藏数量
         mStarCount.setText(mUserBean.getStartCount());
+    }
+
+    private void setButtonClickable(boolean value) {
+        mSubscribe.setClickable(value);
     }
 }

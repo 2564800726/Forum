@@ -21,7 +21,8 @@
             android:drawableRight="@drawable/open"
             android:drawableEnd="@drawable/open"
             android:layout_marginTop="20dp"
-            android:layout_margin="10dp"/>
+            android:layout_margin="10dp"
+            android:background="@drawable/button_selector"/>
 
         <!--我的回复-->
         <TextView
@@ -33,7 +34,8 @@
             android:drawableRight="@drawable/open"
             android:drawableEnd="@drawable/open"
             android:layout_marginTop="5dp"
-            android:layout_margin="10dp"/>
+            android:layout_margin="10dp"
+            android:background="@drawable/button_selector"/>
 
         <!--设置-->
         <TextView
@@ -45,7 +47,8 @@
             android:drawableRight="@drawable/open"
             android:drawableEnd="@drawable/open"
             android:layout_marginTop="5dp"
-            android:layout_margin="10dp"/>
+            android:layout_margin="10dp"
+            android:background="@drawable/button_selector"/>
 
     </LinearLayout>
 

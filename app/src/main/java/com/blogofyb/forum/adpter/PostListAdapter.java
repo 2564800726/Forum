@@ -28,14 +28,15 @@ import com.blogofyb.forum.utils.http.Post;
 import com.blogofyb.forum.utils.img.ImageLoader;
 import com.blogofyb.forum.utils.json.ToHashMap;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final int TYPE_INFORMATION = 0;
     private final int TYPE_TOP = 1;
-    private final int TYPE_ANOTHER = 2;
-    private final int TYPE_END = 5;
+    private final int TYPE_ANOTHER_NO_PIC = 2;
+    private final int TYPE_ANOTHER_HAVE_PIC = 5;
     private final int SIGN_IN_SUCCESS = 3;
     private final int SIGN_IN_FAILED = 4;
 
@@ -75,12 +76,15 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public int getItemViewType(int position) {
         if (position == 0) {
             return TYPE_INFORMATION;
-        } else if (position < mTopPosts.size() + 1) {
+        } else if (position <= mTopPosts.size()) {
             return TYPE_TOP;
-        } else if (position < mPosts.size() + mTopPosts.size() + 1){
-            return TYPE_ANOTHER;
         } else {
-            return TYPE_END;
+            if ("".equals(mPosts.get(position - mTopPosts.size() - 1).getIcon()) ||
+                    mPosts.get(position - mTopPosts.size() - 1).getIcon() == null) {
+                return  TYPE_ANOTHER_NO_PIC;
+            } else {
+                return TYPE_ANOTHER_HAVE_PIC;
+            }
         }
     }
 
@@ -94,18 +98,12 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         } else if (i == TYPE_TOP) {
             view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.top, viewGroup, false);
             return new TopPostHolder(view);
-        } else if (i == TYPE_ANOTHER){
-            if ("".equals(mPosts.get(0).getIcon()) || mPosts.get(0).getIcon() == null) {
-                view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recommend_post_no_pic, viewGroup, false);
-                return new AnotherPostsNoPicHolder(view);
-            } else {
-                view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recommend_post_have_pic, viewGroup, false);
-                return new AnotherPostsHavePicHolder(view);
-            }
+        } else if (i == TYPE_ANOTHER_HAVE_PIC){
+            view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recommend_post_have_pic, viewGroup, false);
+            return new AnotherPostsHavePicHolder(view);
         } else {
-            // 上拉刷新
-            view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.progress_bar, viewGroup, false);
-            return new LoadingHolder(view);
+            view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recommend_post_no_pic, viewGroup, false);
+            return new AnotherPostsNoPicHolder(view);
         }
     }
 
@@ -166,55 +164,50 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     mContext.startActivity(intent);
                 }
             });
-        } else if (getItemViewType(i) == TYPE_ANOTHER){
-            if (viewHolder instanceof AnotherPostsHavePicHolder) {
-                final AnotherPostsHavePicHolder holder = (AnotherPostsHavePicHolder) viewHolder;
-                final PostBean postBean = mPosts.get(i - mTopPosts.size() - 1);
-                holder.mPostTitle.setText(postBean.getTitle());
-                holder.mPostDescription.setText(postBean.getDescription());
-                holder.mPostAuthor.setText(postBean.getAuthor());
-                holder.mPostVisit.setText(postBean.getVisit());
-                holder.mPostDiscuss.setText(postBean.getDiscuss());
-                holder.mPostEditDate.setText(postBean.getDate());
+        } else if (getItemViewType(i) == TYPE_ANOTHER_HAVE_PIC){
+            final AnotherPostsHavePicHolder holder = (AnotherPostsHavePicHolder) viewHolder;
+            final PostBean postBean = mPosts.get(i - mTopPosts.size() - 1);
+            holder.mPostTitle.setText(postBean.getTitle());
+            holder.mPostDescription.setText(postBean.getDescription());
+            holder.mPostAuthor.setText(postBean.getAuthor());
+            holder.mPostVisit.setText(postBean.getVisit());
+            holder.mPostDiscuss.setText(postBean.getDiscuss());
+            holder.mPostEditDate.setText(postBean.getDate());
 
-                mImageLoader.set(holder.mPostIcon, postBean.getIcon());
+            mImageLoader.set(holder.mPostIcon, postBean.getIcon());
 
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(mContext, PostActivity.class);
-                        intent.putExtra(Keys.ID, postBean.getId());
-                        mContext.startActivity(intent);
-                    }
-                });
-            } else {
-                final AnotherPostsNoPicHolder holder = (AnotherPostsNoPicHolder) viewHolder;
-                final PostBean postBean = mPosts.get(i - mTopPosts.size() - 1);
-                holder.mPostTitle.setText(postBean.getTitle());
-                holder.mPostDescription.setText(postBean.getDescription());
-                holder.mPostAuthor.setText(postBean.getAuthor());
-                holder.mPostVisit.setText(postBean.getVisit());
-                holder.mPostDiscuss.setText(postBean.getDiscuss());
-                holder.mPostEditDate.setText(postBean.getDate());
-
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(mContext, PostActivity.class);
-                        intent.putExtra(Keys.ID, postBean.getId());
-                        mContext.startActivity(intent);
-                    }
-                });
-            }
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(mContext, PostActivity.class);
+                    intent.putExtra(Keys.ID, postBean.getId());
+                    mContext.startActivity(intent);
+                }
+            });
         } else {
-            LoadingHolder holder = (LoadingHolder) viewHolder;
+            final AnotherPostsNoPicHolder holder = (AnotherPostsNoPicHolder) viewHolder;
+            final PostBean postBean = mPosts.get(i - mTopPosts.size() - 1);
+            holder.mPostTitle.setText(postBean.getTitle());
+            holder.mPostDescription.setText(postBean.getDescription());
+            holder.mPostAuthor.setText(postBean.getAuthor());
+            holder.mPostVisit.setText(postBean.getVisit());
+            holder.mPostDiscuss.setText(postBean.getDiscuss());
+            holder.mPostEditDate.setText(postBean.getDate());
 
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(mContext, PostActivity.class);
+                    intent.putExtra(Keys.ID, postBean.getId());
+                    mContext.startActivity(intent);
+                }
+            });
         }
     }
 
     @Override
     public int getItemCount() {
-        return mPlateInformation.size() + mPosts.size() + mTopPosts.size() + 1;
+        return mPlateInformation.size() + mPosts.size() + mTopPosts.size();
     }
 
     public void refreshData(List<PlateInformationBean> mPlateInformation, List<TopPostBean> mTopPosts, List<PostBean> mPosts) {

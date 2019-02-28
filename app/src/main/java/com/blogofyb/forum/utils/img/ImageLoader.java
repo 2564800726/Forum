@@ -178,6 +178,8 @@ public class ImageLoader {
                 if (downloadBitmapFromUrl(url, editor.newOutputStream(DISK_CACHE_INDEX))) {
                     editor.commit();
                     return true;
+                } else {
+                    editor.abort();
                 }
             }
             return false;
@@ -203,8 +205,6 @@ public class ImageLoader {
         int reqWidth = imageView.getWidth();
         int reqHeight = imageView.getHeight();
 
-        Log.e("TAG", "=========" + reqHeight + "++++++++++" + reqWidth);
-
         if (reqWidth == 0 || reqHeight == 0) {
             options.inSampleSize = 0;
             return;
@@ -212,7 +212,6 @@ public class ImageLoader {
 
         int width = options.outWidth;
         int height = options.outHeight;
-        Log.e("TAG1", "=========" + height + "++++++++++" + width);
         int inSampleSize = 1;
 
         if (height > reqHeight || width > reqWidth) {
@@ -223,7 +222,6 @@ public class ImageLoader {
                 inSampleSize *= 2;
             }
         }
-        Log.e("TAG3", "IN_SAMPLE_SIZE_" + inSampleSize);
         options.inSampleSize = inSampleSize;
     }
 
@@ -233,7 +231,6 @@ public class ImageLoader {
             MessageDigest messageDigest = MessageDigest.getInstance("MD5");
             messageDigest.update(url.getBytes());
             cacheKey = bytesToHexString(messageDigest.digest());
-            Log.e("TAG", "KEY_" + cacheKey + "_URL_" + url);
         } catch (Exception e) {
             e.printStackTrace();
             return String.valueOf(url.hashCode());

@@ -106,6 +106,7 @@ public class FansActivity extends BaseActivity {
                         userBean.setHead(object.getString(Keys.HEAD));
                         userBean.setGender(object.getString(Keys.GENDER));
                         userBean.setAge(object.getString(Keys.AGE));
+                        userBean.setAccount(object.getString(Keys.ACCOUNT));
                         mUsers.add(userBean);
                     }
                     Message message = new Message();

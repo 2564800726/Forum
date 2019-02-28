@@ -2,23 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorBackground">
+    android:background="@color/colorWhite">
 
-    <Button
+    <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/btn_test_upload"
-        android:text="上传"/>
+        android:layout_height="match_parent"
+        android:id="@+id/srl_refresh_subscribe_posts">
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/btn_upload"
-        android:text="start"/>
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/rv_subscribe_posts">
+        </android.support.v7.widget.RecyclerView>
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/iv_test_photo"/>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </LinearLayout>

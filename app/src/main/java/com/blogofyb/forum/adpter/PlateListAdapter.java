@@ -144,7 +144,7 @@ public class PlateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 holder.mPlateNAmeRight.setText("");
                 holder.mPLateIconRight.setImageBitmap(null);
                 LinearLayout linearLayout = holder.itemView.findViewById(R.id.ll_plate_right);
-                linearLayout.setOnClickListener(null);
+                linearLayout.setClickable(false);
             }
         }
     }

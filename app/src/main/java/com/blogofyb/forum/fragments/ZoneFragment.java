@@ -29,6 +29,7 @@ import com.blogofyb.forum.activities.FansActivity;
 import com.blogofyb.forum.activities.MyPostsActivity;
 import com.blogofyb.forum.activities.MyResponseActivity;
 import com.blogofyb.forum.activities.SelectActivity;
+import com.blogofyb.forum.activities.SelectImageActivity;
 import com.blogofyb.forum.activities.SettingActivity;
 import com.blogofyb.forum.activities.StarActivity;
 import com.blogofyb.forum.activities.SubscribeUserActivity;
@@ -105,12 +106,19 @@ public class ZoneFragment extends Fragment {
         } else {
             mAccount = null;
         }
-        View view;
+        final View view;
         if (mAccount != null) {
             mImageLoader = new ImageLoader(getContext());
-
             view = inflater.inflate(R.layout.fg_zone, container, false);
             mUserHead = view.findViewById(R.id.civ_user_head);
+            mUserHead.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getContext(), SelectImageActivity.class);
+                    intent.putExtra("key", "HEA");
+                    startActivity(intent);
+                }
+            });
             mUserName = view.findViewById(R.id.tv_post_author);
             mGender = view.findViewById(R.id.iv_user_gender);
             mAge = view.findViewById(R.id.tv_user_age);
@@ -120,6 +128,14 @@ public class ZoneFragment extends Fragment {
             mFansCount = view.findViewById(R.id.tv_fans_count);
             mStarCount = view.findViewById(R.id.tv_star_count);
             mBackground = view.findViewById(R.id.iv_user_background);
+            mBackground.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getContext(), SelectImageActivity.class);
+                    intent.putExtra("key", "BAC");
+                    startActivity(intent);
+                }
+            });
             mGenderAge = view.findViewById(R.id.ll_gender_age);
 
             mSwipeRefreshLayout = view.findViewById(R.id.srl_refresh_user_information);
@@ -243,9 +259,7 @@ public class ZoneFragment extends Fragment {
         // 设置背景
 //        mImageLoader.set(mBackground, mUserBean.getBackground());
 
-        new ImageLoadTask().execute(mUserBean.getBackground());
-        System.out.println("TAG" + "_MESSAGE_TEST_" + mBackground.getWidth() + "_" + mBackground.getHeight());
-        System.out.println("TAG");
+        mImageLoader.set(mBackground, mUserBean.getBackground());
         // 设置头像
         mImageLoader.set(mUserHead, mUserBean.getHead());
 
@@ -317,13 +331,5 @@ public class ZoneFragment extends Fragment {
         SQLiteDatabase database = MySQLiteOpenHelper.getDatabase(getContext());
         String sql = "UPDATE " + SQLite.TABLE_NAME + " SET " + column + "='" + newValue + "';";
         database.execSQL(sql);
-    }
-
-    public class ImageLoadTask extends AsyncTask<String, Void, Void> {
-        @Override
-        protected Void doInBackground(String... strings) {
-            mImageLoader.set(mBackground, strings[0]);
-            return null;
-        }
     }
 }

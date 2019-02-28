@@ -1,8 +1,10 @@
 package com.blogofyb.forum.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
@@ -42,7 +44,12 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 // 消息设置（待）
                 break;
             case R.id.tv_logout:
-                logout();
+                Snackbar.make(v, "退出登陆", Snackbar.LENGTH_SHORT).setAction("确定", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        logout();
+                    }
+                }).show();
                 break;
         }
     }
@@ -51,6 +58,9 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         String sql = "DELETE FROM " + SQLite.TABLE_NAME + ";";
         SQLiteDatabase database = MySQLiteOpenHelper.getDatabase(this);
         database.execSQL(sql);
+        SharedPreferences.Editor editor = getSharedPreferences("user", MODE_PRIVATE).edit();
+        editor.putBoolean("haveUser", false);
+        editor.apply();
         Intent intent = new Intent(this, SelectActivity.class);
         startActivity(intent);
         ActivitiesManager.finishAllActivities();

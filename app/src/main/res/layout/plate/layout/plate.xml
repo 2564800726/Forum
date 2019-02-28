@@ -9,7 +9,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:id="@+id/ll_plate_left"
-        android:layout_margin="5dp">
+        android:layout_margin="5dp"
+        android:background="@drawable/button_selector">
 
         <ImageView
             android:layout_width="50dp"
@@ -42,7 +43,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:id="@+id/ll_plate_right"
-        android:layout_margin="5dp">
+        android:layout_margin="5dp"
+        android:background="@drawable/button_selector">
 
         <ImageView
             android:layout_width="50dp"

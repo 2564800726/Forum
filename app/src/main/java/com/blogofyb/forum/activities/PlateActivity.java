@@ -2,6 +2,7 @@ package com.blogofyb.forum.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -41,6 +42,7 @@ public class PlateActivity extends BaseActivity {
     private boolean getPostsFinish = false;
     private boolean getPlateInformationFinish = false;
     private boolean getTopPostsFinish = false;
+    private boolean mHaveUser = false;
 
     private String mPlateId;
     private RecyclerView mRecyclerView;
@@ -75,6 +77,8 @@ public class PlateActivity extends BaseActivity {
     protected void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
         ActivitiesManager.addActivity(this);
+        SharedPreferences sharedPreferences = getSharedPreferences("user", MODE_PRIVATE);
+        mHaveUser = sharedPreferences.getBoolean("haveUser", false);
         Intent intent = getIntent();
         if (intent != null) {
             mPlateId = intent.getStringExtra("id");
@@ -93,10 +97,15 @@ public class PlateActivity extends BaseActivity {
         mWritePost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(PlateActivity.this, WritePostActivity.class);
-                intent.putExtra(Keys.ID, mPlateId);
-                intent.putExtra(Keys.PLATE_NAME, mPlateInformation.get(0).getName());
-                startActivity(intent);
+                if (mHaveUser) {
+                    Intent intent = new Intent(PlateActivity.this, WritePostActivity.class);
+                    intent.putExtra(Keys.ID, mPlateId);
+                    intent.putExtra(Keys.PLATE_NAME, mPlateInformation.get(0).getName());
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(PlateActivity.this, SelectActivity.class);
+                    startActivity(intent);
+                }
             }
         });
         loadBeans();
