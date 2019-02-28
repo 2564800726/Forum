@@ -103,10 +103,12 @@ public class SubscribeFragment extends Fragment {
             mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    loadBean();
                 }
             });
             mPostList = view.findViewById(R.id.rv_subscribe_posts);
+            loadBean();
         } else {
             view = inflater.inflate(R.layout.fg_please_login, container, false);
         }
@@ -115,7 +117,7 @@ public class SubscribeFragment extends Fragment {
 
     private void loadBean() {
         mPosts = new ArrayList<>();
-        Get.sendHttpRequest(ServerInformation.SUBSCRIBE_POSTS, new HttpCallbackListener() {
+        Get.sendHttpRequest(ServerInformation.SUBSCRIBE_POSTS + mAccount, new HttpCallbackListener() {
             @Override
             public void onFinish(String response) {
                 try {
@@ -132,7 +134,7 @@ public class SubscribeFragment extends Fragment {
                         postBean.setId((String) object.get(Keys.ID));
                         postBean.setDate((String) object.get(Keys.POST_DATE));
                         postBean.setTime((String) object.get(Keys.TIME));
-                        jsonArray.put(object);
+                        mPosts.add(postBean);
                     }
                     Message message = new Message();
                     if (mSwipeRefreshLayout.isRefreshing()) {

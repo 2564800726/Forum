@@ -2,6 +2,9 @@ package com.blogofyb.forum.adpter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -23,7 +26,9 @@ import com.blogofyb.forum.beans.PostBean;
 import com.blogofyb.forum.beans.TopPostBean;
 import com.blogofyb.forum.interfaces.HttpCallbackListener;
 import com.blogofyb.forum.utils.constant.Keys;
+import com.blogofyb.forum.utils.constant.SQLite;
 import com.blogofyb.forum.utils.constant.ServerInformation;
+import com.blogofyb.forum.utils.database.MySQLiteOpenHelper;
 import com.blogofyb.forum.utils.http.Post;
 import com.blogofyb.forum.utils.img.ImageLoader;
 import com.blogofyb.forum.utils.json.ToHashMap;
@@ -44,6 +49,9 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private List<TopPostBean> mTopPosts;
     private List<PlateInformationBean> mPlateInformation;
     private String mAccount;
+    private String mPassword;
+    private boolean mHaveUser;
+    private String mPlateId;
 
     private ImageLoader mImageLoader;
     private Button mSignIn;
@@ -70,6 +78,16 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         this.mPlateInformation = mPlateInformation;
         mImageLoader = new ImageLoader(mContext);
         this.mContext = mContext;
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences("user", Context.MODE_PRIVATE);
+        mHaveUser = sharedPreferences.getBoolean("haveUser", false);
+        SQLiteDatabase database = MySQLiteOpenHelper.getDatabase(mContext);
+        Cursor cursor = database.query(SQLite.TABLE_NAME, new String[]{SQLite.ACCOUNT, SQLite.PASSWORD},
+                null, null, null, null, null);
+        while (cursor.moveToNext()) {
+            mAccount = cursor.getString(cursor.getColumnIndex(SQLite.ACCOUNT));
+            mPassword = cursor.getString(cursor.getColumnIndex(SQLite.PASSWORD));
+        }
+        cursor.close();
     }
 
     @Override
@@ -116,36 +134,22 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             mImageLoader.set(holder.mPlateIcon, mPlateInformation.get(i).getIcon());
 
             mSignIn = holder.mSignIn;
+            mPlateId = mPlateInformation.get(i).getId();
+            signIn();
             holder.mSignIn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            HashMap<String, String> body = new HashMap<>();
-                            body.put(Keys.ACCOUNT, mAccount);
-                            Post.sendHttpRequest(ServerInformation.SIGN_IN, body, new HttpCallbackListener() {
-                                @Override
-                                public void onFinish(String response) {
-                                    HashMap returnData = ToHashMap.getInstance().transform(response);
-                                    Message message = new Message();
-                                    if (ServerInformation.SUCCESS.equals(returnData.get(Keys.STATUS))) {
-                                        message.what = SIGN_IN_SUCCESS;
-                                        handler.sendMessage(message);
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure(Exception e) {
-                                    Message message = new Message();
-                                    message.what = SIGN_IN_FAILED;
-                                    handler.sendMessage(message);
-                                }
-                            });
+                            signIn();
                         }
                     }).start();
                 }
             });
+            if (!mHaveUser) {
+                holder.mSearch.setClickable(false);
+            }
             holder.mSearch.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -217,6 +221,36 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         notifyDataSetChanged();
     }
 
+    private void signIn() {
+        HashMap<String, String> body = new HashMap<>();
+        body.put(Keys.ACCOUNT, mAccount);
+        body.put(Keys.PASSWORD, mPassword);
+        body.put(Keys.ID, mPlateId);
+        Post.sendHttpRequest(ServerInformation.SIGN_IN, body, new HttpCallbackListener() {
+            @Override
+            public void onFinish(String response) {
+                HashMap returnData = ToHashMap.getInstance().transform(response);
+                Message message = new Message();
+                if (ServerInformation.SUCCESS.equals(returnData.get(Keys.STATUS))) {
+                    message.what = SIGN_IN_SUCCESS;
+                    handler.sendMessage(message);
+                } else {
+                    onFailure(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                if (e != null) {
+                    e.printStackTrace();
+                }
+                Message message = new Message();
+                message.what = SIGN_IN_FAILED;
+                handler.sendMessage(message);
+            }
+        });
+    }
+
     // 板块的基本信息
     static class PlateInformationHolder extends RecyclerView.ViewHolder {
         private ImageView mPlateIcon;
@@ -283,16 +317,6 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             mPostVisit = itemView.findViewById(R.id.tv_post_visit);
             mPostDiscuss = itemView.findViewById(R.id.tv_post_discuss);
             mPostEditDate = itemView.findViewById(R.id.tv_post_edit_date);
-        }
-    }
-
-    // 加载的进度条
-    static class LoadingHolder extends RecyclerView.ViewHolder {
-        private ProgressBar mProgressBar;
-
-        public LoadingHolder(View view) {
-            super(view);
-            mProgressBar = view.findViewById(R.id.pb_loading);
         }
     }
 }
