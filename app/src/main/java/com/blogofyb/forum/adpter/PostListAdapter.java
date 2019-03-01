@@ -62,9 +62,11 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public void handleMessage(Message message) {
             switch (message.what) {
                 case SIGN_IN_SUCCESS:
+                    mSignIn.setClickable(false);
                     mSignIn.setText("已签到");
                     break;
                 case SIGN_IN_FAILED:
+                    mSignIn.setClickable(true);
                     mSignIn.setText("签到");
                     break;
             }
@@ -135,14 +137,14 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             mSignIn = holder.mSignIn;
             mPlateId = mPlateInformation.get(i).getId();
-            signIn();
+            signIn(ServerInformation.CHECK_SIGN_IN);
             holder.mSignIn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            signIn();
+                            signIn(ServerInformation.SIGN_IN);
                         }
                     }).start();
                 }
@@ -221,12 +223,12 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         notifyDataSetChanged();
     }
 
-    private void signIn() {
+    private void signIn(String api) {
         HashMap<String, String> body = new HashMap<>();
         body.put(Keys.ACCOUNT, mAccount);
         body.put(Keys.PASSWORD, mPassword);
         body.put(Keys.ID, mPlateId);
-        Post.sendHttpRequest(ServerInformation.SIGN_IN, body, new HttpCallbackListener() {
+        Post.sendHttpRequest(api, body, new HttpCallbackListener() {
             @Override
             public void onFinish(String response) {
                 HashMap returnData = ToHashMap.getInstance().transform(response);

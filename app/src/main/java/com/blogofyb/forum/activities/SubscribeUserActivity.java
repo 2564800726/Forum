@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.blogofyb.forum.R;
 import com.blogofyb.forum.adpter.UserListAdapter;
 import com.blogofyb.forum.beans.UserBean;
+import com.blogofyb.forum.decoration.FloorDecoration;
 import com.blogofyb.forum.interfaces.HttpCallbackListener;
 import com.blogofyb.forum.utils.constant.Keys;
 import com.blogofyb.forum.utils.constant.ServerInformation;
@@ -130,6 +131,7 @@ public class SubscribeUserActivity extends BaseActivity {
     private void showData() {
         mAdapter = new UserListAdapter(mUsers, this);
         mSubscribeUserList.setAdapter(mAdapter);
+        mSubscribeUserList.addItemDecoration(new FloorDecoration(this   ));
         mSubscribeUserList.setLayoutManager(new LinearLayoutManager(this));
     }
 }

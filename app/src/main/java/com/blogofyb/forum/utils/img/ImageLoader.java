@@ -10,6 +10,7 @@ import android.util.Log;
 import android.util.LruCache;
 import android.widget.ImageView;
 
+import com.blogofyb.forum.R;
 import com.jakewharton.disklrucache.DiskLruCache;
 import java.io.File;
 import java.io.FileDescriptor;
@@ -39,7 +40,11 @@ public class ImageLoader {
             switch (message.what) {
                 case DOWNLOAD_FINISH:
                     Result result = (Result) message.obj;
-                    result.mImageView.setImageBitmap(result.mBitmap);
+                    if (result.mBitmap != null) {
+                        result.mImageView.setImageBitmap(result.mBitmap);
+                    } else if (result.mImageView.getId() != R.id.iv_user_background) {
+                        result.mImageView.setImageResource(R.drawable.load_image_failed);
+                    }
                     break;
             }
         }

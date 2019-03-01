@@ -60,7 +60,6 @@ public class MyPostsActivity extends BaseActivity {
     protected void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
         ActivitiesManager.addActivity(this);
-
         Intent intent = getIntent();
         if (intent != null) {
             mAccount = intent.getStringExtra(Keys.ACCOUNT);
@@ -76,7 +75,7 @@ public class MyPostsActivity extends BaseActivity {
             }
         });
 
-        mPostList = findViewById(R.id.rv_post_list);
+        mPostList = findViewById(R.id.rv_subscribe_user_list);
 
         Toolbar toolbar = findViewById(R.id.tb_app);
         toolbar.setTitle(getResources().getString(R.string.my_posts));

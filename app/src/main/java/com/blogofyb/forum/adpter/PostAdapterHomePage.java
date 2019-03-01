@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,6 +91,11 @@ public class PostAdapterHomePage extends RecyclerView.Adapter<RecyclerView.ViewH
             } else {
                 holder.mGender.setImageResource(R.drawable.female);
                 holder.mGenderAge.setBackgroundResource(R.drawable.bg_female_age);
+            }
+            if (content.get(Keys.ICON) == null || "".equals(content.get(Keys.ICON))) {
+                holder.mPostPic1.setVisibility(View.GONE);
+            } else {
+                mImageLoader.set(holder.mPostPic1, content.get(Keys.ICON));
             }
             if (mHaveUser) {
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -273,6 +279,7 @@ public class PostAdapterHomePage extends RecyclerView.Adapter<RecyclerView.ViewH
         private TextView mPraise;
         private TextView mContent;
         private LinearLayout mGenderAge;
+        private ImageView mPostPic1;
 
         public ContentHolder(View view) {
             super(view);
@@ -285,6 +292,7 @@ public class PostAdapterHomePage extends RecyclerView.Adapter<RecyclerView.ViewH
             mPraise = view.findViewById(R.id.tv_praise);
             mContent = view.findViewById(R.id.tv_post_content);
             mGenderAge = view.findViewById(R.id.ll_gender_age);
+            mPostPic1 = view.findViewById(R.id.iv_post_icon);
         }
     }
 

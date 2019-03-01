@@ -38,6 +38,7 @@ public class ImageUploader {
                 FileInputStream fileInputStream = null;
                 try {
                     socket = new Socket(ADDRESS, REMOTE_PORT);
+                    socket.setSoTimeout(60000);
                     outputStream = socket.getOutputStream();
 
                     /*

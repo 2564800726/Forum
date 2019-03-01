@@ -38,7 +38,6 @@ public class WritePostActivity extends BaseActivity {
     private String mPassword;
     private String mPostIconUrl;
     private boolean isHavePic = false;
-    private List<HashMap<String, String>> mPlates;
 
     private EditText mPostTitle;
     private EditText mPostContent;
@@ -110,12 +109,16 @@ public class WritePostActivity extends BaseActivity {
                 String content = mPostContent.getText().toString();
                 if ("".equals(title)) {
                     Toast.makeText(WritePostActivity.this, "标题不能为空", Toast.LENGTH_SHORT).show();
+                    return;
                 } else if ("".equals(content)) {
                     Toast.makeText(WritePostActivity.this, "内容不能为空", Toast.LENGTH_SHORT).show();
+                    return;
                 } else if (title.length() < 5) {
                     Toast.makeText(WritePostActivity.this, "标题长度不能小于5个字符", Toast.LENGTH_SHORT).show();
+                    return;
                 } else if (content.length() < 5) {
                     Toast.makeText(WritePostActivity.this, "内容不能小于5个字符", Toast.LENGTH_SHORT).show();
+                    return;
                 }
                 postPost(title, content);
             }

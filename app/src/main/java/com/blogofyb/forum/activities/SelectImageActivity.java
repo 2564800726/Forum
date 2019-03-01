@@ -17,12 +17,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.blogofyb.forum.R;
 import com.blogofyb.forum.interfaces.HttpCallbackListener;
 import com.blogofyb.forum.utils.img.ImageUploader;
+
+import java.io.File;
 
 public class SelectImageActivity extends BaseActivity implements View.OnClickListener {
     private final int CHOOSE_PHOTO = 0;
@@ -31,6 +34,7 @@ public class SelectImageActivity extends BaseActivity implements View.OnClickLis
     private final int UPLOAD_FAILED = 3;
 
     private String key = null;
+    private Uri mUri;
 
     private Handler handler = new Handler() {
         @Override
@@ -121,11 +125,12 @@ public class SelectImageActivity extends BaseActivity implements View.OnClickLis
         String imagePath = null;
         Uri uri = data.getData();
         if (uri != null) {
+            Log.e("URI", "__________" + uri.toString() + "\r\nAuthority" + uri.getAuthority() + "\r\nScheme" + uri.getScheme());
             if (DocumentsContract.isDocumentUri(this, uri)) {
                 String docId = DocumentsContract.getDocumentId(uri);
                 if ("com.android.providers.media.documents".equalsIgnoreCase(uri.getAuthority())) {
                     String id = docId.split(":")[1];
-                    String selection = MediaStore.Images.Media._ID + "=" + docId;
+                    String selection = MediaStore.Images.Media._ID + "=" + id;
                     imagePath = getImagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selection);
                 } else if ("com.android.providers.downloads.documents".equalsIgnoreCase(uri.getAuthority())) {
                     Uri contentUri = ContentUris.withAppendedId(
@@ -174,7 +179,18 @@ public class SelectImageActivity extends BaseActivity implements View.OnClickLis
     }
 
     private void takePhoto() {
+        File tempImage = new File(getExternalCacheDir(), "temp.jpg");
+        try {
+            if (tempImage.exists()) {
+                tempImage.delete();
+            }
+            tempImage.createNewFile();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (Build.VERSION.SDK_INT >= 24) {
 
+        }
     }
 
     private void openAlbum() {
@@ -183,9 +199,25 @@ public class SelectImageActivity extends BaseActivity implements View.OnClickLis
             intent.setType("image/*");
             startActivityForResult(intent, CHOOSE_PHOTO);
         } else {
-            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            Intent intent = new Intent(Intent.ACTION_PICK);
             intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
             startActivityForResult(intent, CHOOSE_PHOTO);
         }
+    }
+
+    private void cropImage(Uri uri) {
+        if (uri == null) {
+            return;
+        }
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(uri, "image/*");
+        intent.putExtra("crop", true);
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
+        intent.putExtra("outputX", 206);
+        intent.putExtra("outputY", 206);
+        intent.putExtra("scale", true);
+        intent.putExtra("return-data", true);
+        startActivityForResult(intent, 10);
     }
 }

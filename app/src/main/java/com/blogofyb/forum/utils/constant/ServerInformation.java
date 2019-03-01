@@ -32,6 +32,9 @@ public class ServerInformation {
     // 签到
     public static final String SIGN_IN = ADDRESS + "signIn";
 
+    // 检查是否签到
+    public static final String CHECK_SIGN_IN = ADDRESS + "checkSignIn";
+
     // 板块信息
     public static final String GET_PLATE_INFORMATION = ADDRESS + "plateInformation?id=";
 

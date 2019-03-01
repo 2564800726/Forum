@@ -20,20 +20,22 @@ public class FloorDecoration extends RecyclerView.ItemDecoration {
         this.mContext = mContext;
         mPaint = new Paint();
         mPaint.setColor(mContext.getResources().getColor(R.color.colorBackground));
-        mPaint.setStrokeWidth(dpToPx(5));
+        mPaint.setStrokeWidth(dpToPx(1));
         mPaint.setAntiAlias(true);
     }
 
     @Override
     public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+        super.getItemOffsets(outRect, view, parent, state);
         int position = parent.getChildAdapterPosition(view);
         if (position < parent.getChildCount() - 1) {
-            outRect.set(0, 0, 0, dpToPx(1));
+            outRect.set(0, 0, 0, dpToPx(5));
         }
     }
 
     @Override
     public void onDrawOver(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+        super.onDrawOver(c, parent, state);
         for (int i = 0; i < parent.getChildCount() - 1; i++) {
             View view = parent.getChildAt(i);
             c.drawLine(view.getLeft(), view.getBottom(), view.getRight(), view.getBottom(), mPaint);

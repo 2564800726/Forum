@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.blogofyb.forum.R;
@@ -77,13 +78,13 @@ public class PlateActivity extends BaseActivity {
     protected void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
         ActivitiesManager.addActivity(this);
+        setContentView(R.layout.layout_plate);
         SharedPreferences sharedPreferences = getSharedPreferences("user", MODE_PRIVATE);
         mHaveUser = sharedPreferences.getBoolean("haveUser", false);
         Intent intent = getIntent();
         if (intent != null) {
             mPlateId = intent.getStringExtra("id");
         }
-        setContentView(R.layout.layout_plate);
         mRecyclerView = findViewById(R.id.rv_post_list);
         mSwipeRefreshLayout = findViewById(R.id.srl_refresh_post);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

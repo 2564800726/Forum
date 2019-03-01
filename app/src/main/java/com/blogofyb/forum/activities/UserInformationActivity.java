@@ -55,6 +55,7 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
     private TextView mFansCount;
     private TextView mStarCount;
     private LinearLayout mGenderAge;
+    private TextView mHimPost;
 
     private Handler handler = new Handler() {
         @Override
@@ -122,7 +123,8 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
         findViewById(R.id.ll_subscribe_count).setOnClickListener(this);
         findViewById(R.id.ll_star_count).setOnClickListener(this);
         findViewById(R.id.ll_fans_count).setOnClickListener(this);
-        findViewById(R.id.tv_him_post).setOnClickListener(this);
+        mHimPost = findViewById(R.id.tv_him_post);
+        mHimPost.setOnClickListener(this);
 
         SharedPreferences sharedPreferences = getSharedPreferences("user", MODE_PRIVATE);
         if (sharedPreferences.getBoolean("haveUser", false) && !mAccount.equals(mUser)) {
@@ -130,6 +132,7 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
             checkSubscribe();
         } else {
             mSubscribe.setVisibility(View.GONE);
+            mHimPost.setText(getResources().getText(R.string.my_posts));
         }
         getData();
         checkSubscribe();
