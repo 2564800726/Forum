@@ -38,6 +38,7 @@
         android:id="@+id/iv_post_icon"
         app:layout_constraintTop_toBottomOf="@id/tv_post_content"
         app:layout_constraintLeft_toLeftOf="@id/tv_post_content"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="10dp"
+        android:scaleType="fitXY"/>
 
 </android.support.constraint.ConstraintLayout>

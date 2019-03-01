@@ -97,6 +97,8 @@ public class WritePostActivity extends BaseActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(WritePostActivity.this, SelectImageActivity.class);
                 intent.putExtra("key", "POS");
+                intent.putExtra("width", mPostIcon.getWidth());
+                intent.putExtra("height", mPostIcon.getHeight());
                 startActivityForResult(intent, SET_POST_ICON);
             }
         });

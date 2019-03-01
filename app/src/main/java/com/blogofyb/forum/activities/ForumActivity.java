@@ -21,6 +21,9 @@ import com.blogofyb.forum.utils.constant.Keys;
 import com.blogofyb.forum.utils.constant.SQLite;
 import com.blogofyb.forum.utils.database.MySQLiteOpenHelper;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class ForumActivity extends BaseActivity implements View.OnClickListener {
     private ViewPager mViewPager;
     boolean flag = false;
@@ -218,6 +221,12 @@ public class ForumActivity extends BaseActivity implements View.OnClickListener 
         } else {
             Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
             flag = true;
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    flag = false;
+                }
+            }, 2000);
         }
     }
 }

@@ -6,6 +6,8 @@ import android.content.ContentUris;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,24 +19,37 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.blogofyb.forum.R;
 import com.blogofyb.forum.interfaces.HttpCallbackListener;
 import com.blogofyb.forum.utils.img.ImageUploader;
+import com.soundcloud.android.crop.Crop;
 
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class SelectImageActivity extends BaseActivity implements View.OnClickListener {
     private final int CHOOSE_PHOTO = 0;
     private final int TAKE_PHOTO = 1;
     private final int UPLOAD_SUCCESS = 2;
     private final int UPLOAD_FAILED = 3;
+    private final int CROP_IMAGE = 4;
 
     private String key = null;
     private Uri mUri;
+    private Uri mOutPutUri;
+    private int mWidth;
+    private int mHeight;
 
     private Handler handler = new Handler() {
         @Override
@@ -61,7 +76,10 @@ public class SelectImageActivity extends BaseActivity implements View.OnClickLis
         Intent intent = getIntent();
         if (intent != null) {
             key = intent.getStringExtra("key");
+            mWidth = intent.getIntExtra("width", 0);
+            mHeight = intent.getIntExtra("height", 0);
         }
+        mOutPutUri = Uri.parse("file://" + getExternalCacheDir() + File.separator + "temp_crop.png");
         setTitle("选择图片");
         findViewById(R.id.tv_take_photo).setOnClickListener(this);
         findViewById(R.id.tv_select_from_album).setOnClickListener(this);
@@ -102,47 +120,14 @@ public class SelectImageActivity extends BaseActivity implements View.OnClickLis
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         switch (requestCode) {
             case CHOOSE_PHOTO:
-                if (resultCode == RESULT_OK && data != null) {
-                    if (Build.VERSION.SDK_INT >= 19) {
-                        handleImageOnKitKat(data);
-                    } else {
-                        handleImageBeforeKitKat(data);
-                    }
-                }
+                Crop.of(data.getData(), mOutPutUri).withAspect(mWidth, mHeight).start(this);
                 break;
             case TAKE_PHOTO:
-
+                Crop.of(mUri, mOutPutUri).withAspect(mWidth, mHeight).start(this);
                 break;
-        }
-    }
-
-    private void handleImageBeforeKitKat(Intent data) {
-        uploadImage(getImagePath(data.getData(), null));
-    }
-
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    private void handleImageOnKitKat(Intent data) {
-        String imagePath = null;
-        Uri uri = data.getData();
-        if (uri != null) {
-            Log.e("URI", "__________" + uri.toString() + "\r\nAuthority" + uri.getAuthority() + "\r\nScheme" + uri.getScheme());
-            if (DocumentsContract.isDocumentUri(this, uri)) {
-                String docId = DocumentsContract.getDocumentId(uri);
-                if ("com.android.providers.media.documents".equalsIgnoreCase(uri.getAuthority())) {
-                    String id = docId.split(":")[1];
-                    String selection = MediaStore.Images.Media._ID + "=" + id;
-                    imagePath = getImagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selection);
-                } else if ("com.android.providers.downloads.documents".equalsIgnoreCase(uri.getAuthority())) {
-                    Uri contentUri = ContentUris.withAppendedId(
-                            Uri.parse("content://downloads/public_downloads"), Long.valueOf(docId));
-                    imagePath = getImagePath(contentUri, null);
-                }
-            } else if ("content".equalsIgnoreCase(uri.getScheme())){
-                imagePath = getImagePath(uri, null);
-            } else if ("file".equalsIgnoreCase(uri.getScheme())) {
-                imagePath = uri.getPath();
-            }
-            uploadImage(imagePath);
+            case Crop.REQUEST_CROP:
+                uploadImage(mOutPutUri.getPath());
+                break;
         }
     }
 
@@ -189,8 +174,13 @@ public class SelectImageActivity extends BaseActivity implements View.OnClickLis
             e.printStackTrace();
         }
         if (Build.VERSION.SDK_INT >= 24) {
-
+            mUri = FileProvider.getUriForFile(this, "com.blogofyb.forum.test", tempImage);
+        } else {
+            mUri = Uri.fromFile(tempImage);
         }
+        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, mUri);
+        startActivityForResult(intent, TAKE_PHOTO);
     }
 
     private void openAlbum() {
@@ -203,21 +193,5 @@ public class SelectImageActivity extends BaseActivity implements View.OnClickLis
             intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
             startActivityForResult(intent, CHOOSE_PHOTO);
         }
-    }
-
-    private void cropImage(Uri uri) {
-        if (uri == null) {
-            return;
-        }
-        Intent intent = new Intent("com.android.camera.action.CROP");
-        intent.setDataAndType(uri, "image/*");
-        intent.putExtra("crop", true);
-        intent.putExtra("aspectX", 1);
-        intent.putExtra("aspectY", 1);
-        intent.putExtra("outputX", 206);
-        intent.putExtra("outputY", 206);
-        intent.putExtra("scale", true);
-        intent.putExtra("return-data", true);
-        startActivityForResult(intent, 10);
     }
 }

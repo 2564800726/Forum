@@ -29,7 +29,7 @@ public class FloorDecoration extends RecyclerView.ItemDecoration {
         super.getItemOffsets(outRect, view, parent, state);
         int position = parent.getChildAdapterPosition(view);
         if (position < parent.getChildCount() - 1) {
-            outRect.set(0, 0, 0, dpToPx(5));
+            outRect.set(0, 0, 0, dpToPx(1));
         }
     }
 
@@ -40,6 +40,11 @@ public class FloorDecoration extends RecyclerView.ItemDecoration {
             View view = parent.getChildAt(i);
             c.drawLine(view.getLeft(), view.getBottom(), view.getRight(), view.getBottom(), mPaint);
         }
+    }
+
+    @Override
+    public void onDraw(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+        super.onDraw(c, parent, state);
     }
 
     private int dpToPx(int dp) {

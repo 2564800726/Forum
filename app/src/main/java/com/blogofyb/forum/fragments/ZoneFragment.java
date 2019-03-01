@@ -116,6 +116,8 @@ public class ZoneFragment extends Fragment {
                 public void onClick(View v) {
                     Intent intent = new Intent(getContext(), SelectImageActivity.class);
                     intent.putExtra("key", "HEA");
+                    intent.putExtra("width", mUserHead.getWidth());
+                    intent.putExtra("height", mUserHead.getHeight());
                     startActivity(intent);
                 }
             });
@@ -133,6 +135,8 @@ public class ZoneFragment extends Fragment {
                 public void onClick(View v) {
                     Intent intent = new Intent(getContext(), SelectImageActivity.class);
                     intent.putExtra("key", "BAC");
+                    intent.putExtra("width", mBackground.getWidth());
+                    intent.putExtra("height", mBackground.getHeight());
                     startActivity(intent);
                 }
             });

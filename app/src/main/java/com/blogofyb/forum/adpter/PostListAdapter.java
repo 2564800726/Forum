@@ -321,4 +321,14 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             mPostEditDate = itemView.findViewById(R.id.tv_post_edit_date);
         }
     }
+
+    // 加载中
+    static class FooterHolder extends RecyclerView.ViewHolder {
+        private ProgressBar mProgressBar;
+
+        public FooterHolder(View view) {
+            super(view);
+            mProgressBar = view.findViewById(R.id.pb_loading);
+        }
+    }
 }
