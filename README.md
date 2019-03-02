@@ -3,11 +3,11 @@
 用到的第三方框架:
 
 >> [me.jessyan:autosize:1.1.2](https://github.com/JessYanCoding/AndroidAutoSize)
-
+>>
 >> [com.jakewharton:disklrucache:2.0.2](https://github.com/JakeWharton/DiskLruCache)
-
+>>
 >> [de.hdodenhof:circleimageview:3.0.0](https://github.com/hdodenhof/CircleImageView)
-
+>>
 >> [com.soundcloud.android:android-crop:1.0.1@aar](https://github.com/jdamcd/android-crop)
 
 验证码随便填写一个就可以了，不会验证
