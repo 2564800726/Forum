@@ -1,5 +1,11 @@
 ## 某论坛
 
+用到的第三方框架:
+>> [me.jessyan:autosize:1.1.2](https://github.com/JessYanCoding/AndroidAutoSize)
+>> [com.jakewharton:disklrucache:2.0.2](https://github.com/JakeWharton/DiskLruCache)
+>> [de.hdodenhof:circleimageview:3.0.0](https://github.com/hdodenhof/CircleImageView)
+>> [com.soundcloud.android:android-crop:1.0.1@aar](https://github.com/jdamcd/android-crop)
+
 验证码随便填写一个就可以了，不会验证
 
 * [主页](#select)
@@ -62,7 +68,7 @@
 > >
 > > <h4 id="post">帖子详情</h4>
 > >
-> > 只有楼主的第一条消息才有图片，而且最多只有一张，而且还不能大图查看...
+> > 只有楼主的第一条消息才有图片，最多只有一张，还不能大图查看...
 > >
 > > 点赞、收藏、翻页（没有页码跳转）、评论
 > >
