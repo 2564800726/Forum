@@ -38,15 +38,25 @@ public class MyResponseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private int mIndex = 0;
     private String mAccount;
     private ProgressBar mLoading;
+    private boolean mHaveMore = true;
+    private boolean mIsLoading = false;
 
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message message) {
             switch (message.what) {
                 case LOAD_BEAN_FAILED:
+                    mIsLoading = false;
+                    if (mLoading != null) {
+                        mLoading.setVisibility(View.GONE);
+                    }
                     Toast.makeText(mContext, "加载失败", Toast.LENGTH_SHORT).show();
                     break;
                 case LOAD_BEAN_SUCCESS:
+                    mIsLoading = false;
+                    if (mLoading != null) {
+                        mLoading.setVisibility(View.GONE);
+                    }
                     notifyDataSetChanged();
                     break;
             }
@@ -61,10 +71,6 @@ public class MyResponseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public int getItemViewType(int position) {
-        if (getItemCount() > 30 && position == getItemCount() - 5) {
-            mIndex++;
-            loadBean();
-        }
         if (position == mComments.size()) {
             return TYPE_FOOTER;
         } else {
@@ -87,6 +93,11 @@ public class MyResponseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+        if (getItemCount() > 30 && i == getItemCount() - 1 && mHaveMore && !mIsLoading) {
+            mIsLoading = true;
+            mIndex++;
+            loadBean();
+        }
         if (getItemViewType(i) == TYPE_RESPONSE) {
             CommentHolder holder = (CommentHolder) viewHolder;
             final CommentBean commentBean = mComments.get(i);
@@ -111,6 +122,9 @@ public class MyResponseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (getItemCount() < 31) {
                 mLoading.setVisibility(View.GONE);
             }
+            if (!mIsLoading) {
+                mLoading.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -124,7 +138,9 @@ public class MyResponseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             @Override
             public void onFinish(String response) {
                 try {
-                    JSONArray jsonArray = new JSONObject(response).getJSONArray(Keys.RETURN_DATA);
+                    JSONObject jsonObject = new JSONObject(response);
+                    mHaveMore = ServerInformation.SUCCESS.equals(jsonObject.getString(Keys.STATUS));
+                    JSONArray jsonArray = jsonObject.getJSONArray(Keys.RETURN_DATA);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject object = jsonArray.getJSONObject(i);
                         CommentBean commentBean = new CommentBean();
@@ -157,6 +173,8 @@ public class MyResponseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public void refreshData(List<CommentBean> mComments) {
+        mIndex = 0;
+        mHaveMore = true;
         this.mComments = mComments;
         notifyDataSetChanged();
     }
