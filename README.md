@@ -10,6 +10,11 @@
   * [订阅板块](#subscribe_plate)
   * [搜索](#search_main)
   * [置顶推荐](#recommend_main)
+  * [板块详情](#plate)
+    * [签到](#sign_in)
+    * [搜索](#search_plate)
+    * [发表帖子](#edit_post)
+  * [帖子详情](#post)
 * [关注](#subscribe_post)
 * [空间](#zone)
   * [修改资料](#change_user_information)
@@ -46,6 +51,28 @@
 > > <h4 id="recommend_main">置顶推荐</h4>
 > >
 > > 按照最后编辑的时间推荐一条最新的帖子
+> >
+> > <h4 id="#plate">板块详情</h4>
+> >
+> > 最上面的四条置顶也按了时间来推荐，和下面的帖子重复了...
+> >
+> > 签到可以+50exp
+> >
+> > ![板块](https://github.com/2564800726/Forum/blob/master/image/Screenshot_2019-03-01-17-48-31-171_com.blogofyb.f.png?raw=true)
+> >
+> > <h4 id="post">帖子详情</h4>
+> >
+> > 只有楼主的第一条消息才有图片，而且最多只有一张，而且还不能大图查看...
+> >
+> > 点赞、收藏、翻页（没有页码跳转）、评论
+> >
+> > 点击楼层可以对当层主发起评论（楼主除外）
+> >
+> > 点击评论按钮都是对楼主的评论
+> >
+> > 评论exp+5
+> >
+> > ![帖子详情](https://github.com/2564800726/Forum/blob/master/image/Screenshot_2019-03-01-17-48-41-963_com.blogofyb.f.png?raw=true)
 
 <h3 id="subscribe_post">关注</h3>
 
@@ -70,8 +97,6 @@
 > > <h4 id="change_head">修改头像</h4>
 > >
 > > 从相册里面选择一张照片作为头像或者背景图
-> >
-> > ![上传图片]()
 > >
 > > <h4 id="my_post">我的帖子</h4>
 > >
@@ -218,7 +243,7 @@ public static final String ADDRESS = "http://129.204.3.245:13524/";
 
 其他的数据交互
 
-[ForumServer](https://github.com/2564800726/Forum)
+[ForumServer](https://github.com/2564800726/ForumServer)
 
 <h3 id="forum_image_server">ForumImageServer</h3>
 

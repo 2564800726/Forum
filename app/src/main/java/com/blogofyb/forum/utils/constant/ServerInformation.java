@@ -92,5 +92,8 @@ public class ServerInformation {
     // 关注的用户的帖子
     public static final String SUBSCRIBE_POSTS = ADDRESS + "subscribe?subscribe=";
 
+    // 我得回复
+    public static final String MY_RESPONSE = ADDRESS + "response?account=";
+
     public static final String SUCCESS = "200";
 }

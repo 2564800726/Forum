@@ -61,4 +61,6 @@
     <string name="level_5">Lv.5</string>
     <string name="level_6">Lv.6</string>
     <string name="default_number">0</string>
+    <string name="source_post">帖子：</string>
+    <string name="source_plate">板块：</string>
 </resources>

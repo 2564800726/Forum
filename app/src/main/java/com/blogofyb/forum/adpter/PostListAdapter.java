@@ -167,6 +167,8 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 public void onClick(View v) {
                     Intent intent = new Intent(mContext, PostActivity.class);
                     intent.putExtra(Keys.ID, mTopPosts.get(i - 1).getId());
+                    intent.putExtra(Keys.POST_AUTHOR, mTopPosts.get(i - 1).getAuthor());
+                    intent.putExtra(Keys.POST_CONTENT, mTopPosts.get(i - 1).getDescription());
                     mContext.startActivity(intent);
                 }
             });
@@ -187,6 +189,8 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 public void onClick(View view) {
                     Intent intent = new Intent(mContext, PostActivity.class);
                     intent.putExtra(Keys.ID, postBean.getId());
+                    intent.putExtra(Keys.POST_AUTHOR, postBean.getAuthor());
+                    intent.putExtra(Keys.POST_CONTENT, postBean.getDescription());
                     mContext.startActivity(intent);
                 }
             });
@@ -205,6 +209,8 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 public void onClick(View view) {
                     Intent intent = new Intent(mContext, PostActivity.class);
                     intent.putExtra(Keys.ID, postBean.getId());
+                    intent.putExtra(Keys.POST_AUTHOR, postBean.getAuthor());
+                    intent.putExtra(Keys.POST_CONTENT, postBean.getDescription());
                     mContext.startActivity(intent);
                 }
             });

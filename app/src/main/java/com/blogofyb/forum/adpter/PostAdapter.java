@@ -22,6 +22,7 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final int TYPE_HAVE_PIC = 0;
     private final int TYPE_NO_PIC = 1;
 
+
     private List<PostBean> mPosts;
     private Context mContext;
     private ImageLoader mImageLoader;

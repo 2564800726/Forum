@@ -230,6 +230,8 @@ public class PlateActivity extends BaseActivity {
                         TopPostBean topPostBean = new TopPostBean();
                         topPostBean.setId(object.getString(Keys.ID));
                         topPostBean.setTitle(object.getString(Keys.POST_TITLE));
+                        topPostBean.setAuthor(object.getString(Keys.POST_AUTHOR));
+                        topPostBean.setDescription(object.getString(Keys.POST_DESCRIPTION));
                         mTopPosts.add(topPostBean);
                         getTopPostsFinish = true;
                     }
