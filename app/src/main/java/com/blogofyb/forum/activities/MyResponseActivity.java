@@ -110,11 +110,6 @@ public class MyResponseActivity extends BaseActivity {
                         commentBean.setPostTitle(object.getString(Keys.POST_TITLE));
                         commentBean.setDescription(object.getString(Keys.POST_DESCRIPTION));
                         commentBean.setUserName(object.getString(Keys.POST_AUTHOR));
-//                        commentBean.setTime(object.getString(Keys.TIME));
-//                        commentBean.setUserAge(object.getString(Keys.AGE));
-//                        commentBean.setUserGender(object.getString(Keys.GENDER));
-//                        commentBean.setUserHead(object.getString(Keys.HEAD));
-//                        commentBean.setUserLevel(object.getString(Keys.LEVEL));
                         mComments.add(commentBean);
                     }
                     Message message = new Message();

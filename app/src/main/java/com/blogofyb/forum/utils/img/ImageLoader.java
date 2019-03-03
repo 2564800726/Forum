@@ -40,7 +40,7 @@ public class ImageLoader {
             switch (message.what) {
                 case DOWNLOAD_FINISH:
                     Result result = (Result) message.obj;
-                    if (result.mBitmap != null) {
+                    if (result.mBitmap != null && result.mUrl.equals(result.mImageView.getTag())) {
                         result.mImageView.setImageBitmap(result.mBitmap);
                     } else if (result.mImageView.getId() != R.id.iv_user_background) {
                         result.mImageView.setImageResource(R.drawable.load_image_failed);
@@ -77,6 +77,7 @@ public class ImageLoader {
     }
 
     public void set(final ImageView imageView, final String url) {
+        imageView.setTag(url);
         new Thread(new Runnable() {
             @Override
             public void run() {
